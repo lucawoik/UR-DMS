@@ -9,8 +9,12 @@ To run the Uvicorn Server which serves the API at **127.0.0.1:8000**:
 
 ``uvicorn main:app --reload``
 
+***
+
 ## License
 This software is licensed under the MIT License.
+
+***
 
 ## Project status
 Very WIP...
