@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
-class User:
+class User(Base):
     """DB-Model class for the 'users' table.
     Attributes:
         rz_username : str (PK)
@@ -22,7 +22,7 @@ class User:
     hashed_password = Column(String)
 
 
-class Device:
+class Device(Base):
     """DB-Model class for 'devices' table
     Attributes:
         device_id : str (PK)
@@ -46,7 +46,7 @@ class Device:
     image_url = Column(String)
 
 
-class OwnerTransaction:
+class OwnerTransaction(Base):
     """DB-Model class for 'owner_transactions' table
     Attributes:
         owner_transaction_id: str (PK)
@@ -62,7 +62,7 @@ class OwnerTransaction:
     device_id = relationship("Device")
 
 
-class LocationTransaction:
+class LocationTransaction(Base):
     """DB-Model class for 'location_transactions' table
     Attributes:
         location_transaction_id : str (PK)
@@ -78,7 +78,7 @@ class LocationTransaction:
     device_id = relationship("Device")
 
 
-class PurchasingInformation:
+class PurchasingInformation(Base):
     """DB-Model class for  'purchasing_information' table
     Attributes:
         purchasing_information_id : str (PK)
