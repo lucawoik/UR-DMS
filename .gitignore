@@ -3,3 +3,6 @@
 
 # Python virtual enviornment
 venv/
+
+# Database
+backend.db
