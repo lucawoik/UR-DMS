@@ -13,6 +13,14 @@ class User:
         has_admin_privileges : bool
         hashed_password : str
     """
+    __tablename__ = "users"
+
+    rz_username = Column(String, primary_key=True)
+    full_name = Column(String, unique=True)
+    organisation_unit = Column(String)
+    has_admin_privileges = Column(Boolean)
+    hashed_password = Column(String)
+
 
 class Device:
     """DB-Model class for 'devices' table
@@ -26,6 +34,17 @@ class Device:
         serial_number : str
         image_url : str
     """
+    __tablename__ = "devices"
+
+    device_id = Column(String, primary_key=True)
+    title = Column(String)
+    device_type = Column(String)
+    description = Column(String, nullable=True)
+    accessories = Column(String, nullable=True)
+    rz_username_buyer = Column(String, unique=True)
+    serial_number = Column(String)
+    image_url = Column(String)
+
 
 class OwnerTransaction:
     """DB-Model class for 'owner_transactions' table
@@ -35,6 +54,13 @@ class OwnerTransaction:
         timestamp_owner_since : str
         device_id : str (FK)
     """
+    __tablename__ = "owner_transactions"
+
+    owner_transaction_id = Column(String, primary_key=True)
+    rz_username = Column(String)
+    timestamp_owner_since = Column(String)
+    device_id = relationship("Device")
+
 
 class LocationTransaction:
     """DB-Model class for 'location_transactions' table
@@ -44,6 +70,13 @@ class LocationTransaction:
         timestamp_located_since : str
         device_id : str (FK)
     """
+    __tablename__ = "location_transactions"
+
+    location_transaction_id = Column(String, primary_key=True)
+    room_code = Column(String)
+    timestamp_located_since = Column(String)
+    device_id = relationship("Device")
+
 
 class PurchasingInformation:
     """DB-Model class for  'purchasing_information' table
@@ -56,3 +89,12 @@ class PurchasingInformation:
         seller : str
         device_id : str (FK)
     """
+    __tablename__ = "purchasing_information"
+
+    purchasing_information_id = Column(String, primary_key=True)
+    price = Column(String)
+    timestamp_warranty_end = Column(String)
+    timestamp_purchase = Column(String)
+    cost_centre = Column(Integer, nullable=True)
+    seller = Column(String)
+    device_id = relationship("Device")
