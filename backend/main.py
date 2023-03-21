@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -19,6 +21,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    """ Dependency, which returns the current user.
+        - oauth2_scheme as sub-dependency
+    :param token: str
+    :return: current_user: User
+    """
+
 
 
 @app.get("/")
