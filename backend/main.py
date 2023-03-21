@@ -38,5 +38,5 @@ def read_root():
 
 
 @app.get("/test/")
-async def testing_auth(token: str = Depends(oauth2_scheme)):
+async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
