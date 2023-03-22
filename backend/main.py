@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -10,6 +10,11 @@ from .database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+def fake_hash_password(password: str):
+    return "fakehashed" + password
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
