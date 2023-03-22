@@ -12,7 +12,6 @@ class User(BaseModel):
         full_name : str
         organisation_unit : str
         has_admin_privileges : bool
-        hashed_password : str
     """
     rz_username: str
     full_name: str
@@ -20,3 +19,10 @@ class User(BaseModel):
     has_admin_privileges: bool
     # TODO: Add hashed password Currently not using a password
 
+
+class UserInDB(User):
+    """Additional User subclass for referencing the users password
+    Attributes:
+        hashed_password : str
+    """
+    hashed_password: str
