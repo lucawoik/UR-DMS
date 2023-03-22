@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from starlette import status
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -70,6 +71,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     :return: current_user: User
     """
     user = fake_decode_token(token)
+    # Exception code taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return user
 
 
