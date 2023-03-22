@@ -23,6 +23,18 @@ def get_db():
         db.close()
 
 
+# TODO: For now using a fake-db (dictionary), needs to be replaced with backend.db later
+fake_users_db = {
+    "user": {
+        "rz_username": "user",
+        "full_name": "Max Mustermann",
+        "organisation_unit" : "Medieninformatik",
+        "has_admin_privileges": False,
+        "hashed_password": "1234"
+    }
+}
+
+
 # TODO: Current implementation according to FastAPI docs
 #  (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
 def fake_decode_token(token):
