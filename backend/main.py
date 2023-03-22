@@ -33,7 +33,7 @@ fake_users_db = {
     "user": {
         "rz_username": "user",
         "full_name": "Max Mustermann",
-        "organisation_unit" : "Medieninformatik",
+        "organisation_unit": "Medieninformatik",
         "has_admin_privileges": False,
         "hashed_password": "1234"
     }
