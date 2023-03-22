@@ -41,11 +41,15 @@ fake_users_db = {
 
 
 # TODO: Current implementation according to FastAPI docs
-#  (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
+#  (https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/)
 def fake_decode_token(token):
-    return schemas.User(
-        rz_username=token + "fakedecoded", full_name="User", organisation_unit="1", has_admin_privileges=True
-    )
+    """ This method decodes the token that is given from the authentication process and gets the corresponding
+    user from the database.
+    :param token:
+    :return:
+    """
+    user = get_user(fake_users_db, token)
+    return user
 
 
 def get_user(db, rz_username: str):
