@@ -48,6 +48,17 @@ def fake_decode_token(token):
     )
 
 
+def get_user(db, rz_username: str):
+    """ Helper function which gets the user from the fake-db dictionary
+    :param db:
+    :param rz_username:
+    :return:
+    """
+    if rz_username in db:
+        user_dict = db[rz_username]
+        return schemas.UserInDB(**user_dict)
+
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """ Dependency, which returns the current user.
         - oauth2_scheme as sub-dependency
