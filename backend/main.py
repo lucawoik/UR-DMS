@@ -60,7 +60,7 @@ def get_user(db, rz_username: str):
     """
     if rz_username in db:
         user_dict = db[rz_username]
-        return schemas.UserInDB(**user_dict)
+        return schemas.UserCreate(**user_dict)
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
@@ -91,7 +91,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user_dict = fake_users_db.get(form_data.username)
     if not user_dict:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    user = schemas.UserInDB(**user_dict)
+    user = schemas.UserCreate(**user_dict)
     hashed_password = fake_hash_password(form_data.password)
     if not hashed_password == user.hashed_password:
         raise HTTPException(status_code=400, detail="Incorrect username or password")

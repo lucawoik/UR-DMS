@@ -20,7 +20,7 @@ class User(BaseModel):
     # TODO: Add hashed password Currently not using a password
 
 
-class UserInDB(User):
+class UserCreate(User):
     """Additional User subclass for referencing the users password
     Attributes:
         hashed_password : str
