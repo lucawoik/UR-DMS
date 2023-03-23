@@ -81,22 +81,21 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 
 @app.post("/token")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
     :param form_data:
     :return:
     TODO: Current implementation taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
     """
-    user_dict = fake_users_db.get(form_data.username)
-    if not user_dict:
+    user_from_db = crud.get_user_by_username(db, form_data.username)
+    if not user_from_db:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    user = schemas.UserCreate(**user_dict)
     hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
+    if not hashed_password == user_from_db.hashed_password:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    return {"access_token": user.rz_username, "token_type": "bearer"}
+    return {"access_token": user_from_db.rz_username, "token_type": "bearer"}
 
 
 @app.get("/")
