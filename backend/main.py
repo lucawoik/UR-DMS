@@ -84,6 +84,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
+    :param db:
     :param form_data:
     :return:
     TODO: Current implementation taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
