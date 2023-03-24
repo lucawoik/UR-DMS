@@ -28,6 +28,39 @@ def get_db():
         db.close()
 
 
+# TODO: Remove print statements
+def prepare_db():
+    """
+    Method which prepares the database with the necessary user data.
+    :return:
+    """
+    db = SessionLocal()
+    # Checking for existing user with username "user" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "user"):
+        user = schemas.UserCreate(rz_username="user",
+                                  full_name="User User",
+                                  organisation_unit="1111111",
+                                  has_admin_privileges=False,
+                                  hashed_password=fake_hash_password("1234"))
+        crud.create_user(db, user)
+    else:
+        print("User with rz_username: user exists already")
+    # Checking for existing user with username "admin" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "admin"):
+        admin = schemas.UserCreate(rz_username="admin",
+                                   full_name="User Admin",
+                                   organisation_unit="2222222",
+                                   has_admin_privileges=True,
+                                   hashed_password=fake_hash_password("vollgeheim"))
+        crud.create_user(db, admin)
+    else:
+        print("User with rz_username: admin exists already")
+
+
+# Calling prepare_db() method
+prepare_db()
+
+
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
