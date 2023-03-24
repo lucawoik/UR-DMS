@@ -115,7 +115,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return users
 
 
-@app.get("/users/{username}", response_model=schemas.User)
+@app.get("/users/by-username/{username}/", response_model=schemas.User)
 def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, rz_username)
     if db_user is None:
@@ -123,6 +123,19 @@ def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.get("/users/me")
-async def read_users_me(current_user: Annotated[schemas.User, Depends(get_current_user)]):
+@app.get("/users/me", response_model=schemas.User)
+async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    """
+    Returns the currently authenticated user using the token given from oauth2
+    :param token:
+    :param db:
+    :return:
+    """
+    current_user = crud.get_user_by_username(db, token)
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return current_user
