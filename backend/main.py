@@ -80,6 +80,24 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     return {"access_token": user_from_db.rz_username, "token_type": "bearer"}
 
 
+@app.get("/users/me", response_model=schemas.User)
+async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    """
+    Returns the currently authenticated user using the token given from oauth2
+    :param token:
+    :param db:
+    :return:
+    """
+    current_user = crud.get_user_by_username(db, token)
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return current_user
+
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -102,21 +120,3 @@ def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
-
-
-@app.get("/users/me", response_model=schemas.User)
-async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    """
-    Returns the currently authenticated user using the token given from oauth2
-    :param token:
-    :param db:
-    :return:
-    """
-    current_user = crud.get_user_by_username(db, token)
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return current_user
