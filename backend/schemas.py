@@ -30,3 +30,14 @@ class UserCreate(User):
         hashed_password : str
     """
     hashed_password: str
+
+
+class Token(BaseModel):
+    """
+    Token class which is used to handle the access tokens sent after login.
+    Attributes:
+        access_token: str
+        token_type: str
+    """
+    access_token: str
+    token_type: str
