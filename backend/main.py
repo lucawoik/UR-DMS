@@ -2,12 +2,17 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from . import variables
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
-from . import variables
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -18,7 +23,39 @@ def fake_hash_password(password: str):
     return "fakehashed" + password
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+def verify_password(plain_password, hashed_password):
+    """
+    Method to verify the given password in plain text against the hashed string
+    :param plain_password:
+    :param hashed_password:
+    :return:
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password):
+    """
+    Generating the hash from the password in plain text
+    :param password:
+    :return:
+    """
+    return pwd_context.hash(password)
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    """
+    Authenticating the user by getting the user from the db and verifying the password.
+    :param db:
+    :param username:
+    :param password:
+    :return:
+    """
+    user = crud.get_user_by_username(db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
 
 
 # Dependency
