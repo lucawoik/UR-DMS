@@ -80,7 +80,7 @@ def prepare_db():
                                   full_name="User User",
                                   organisation_unit="1111111",
                                   has_admin_privileges=False,
-                                  hashed_password=fake_hash_password("1234"))
+                                  hashed_password=get_password_hash("test123"))
         crud.create_user(db, user)
     else:
         print("User with rz_username: user exists already")
@@ -90,7 +90,7 @@ def prepare_db():
                                    full_name="User Admin",
                                    organisation_unit="2222222",
                                    has_admin_privileges=True,
-                                   hashed_password=fake_hash_password("vollgeheim"))
+                                   hashed_password=get_password_hash("vollgeheim"))
         crud.create_user(db, admin)
     else:
         print("User with rz_username: admin exists already")
