@@ -147,14 +147,23 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
     :param db:
     :return:
     """
-    current_user = crud.get_user_by_username(db, token)
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return current_user
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, variables.SECRET_KEY, algorithms=[variables.ALGORITHM])
+        rz_username: str = payload.get("sub")
+        if rz_username is None:
+            raise credentials_exception
+        token_data = schemas.TokenData(rz_username=rz_username)
+    except JWTError:
+        raise credentials_exception
+    user = crud.get_user_by_username(db, rz_username=token_data.rz_username)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 @app.get("/")
