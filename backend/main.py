@@ -86,7 +86,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+def authenticate_user(db: Session, username: str, password: str):
     """
     Authenticating the user by getting the user from the db and verifying the password.
     :param db:
@@ -129,14 +129,18 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     :return:
     TODO: Current implementation taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
     """
-    user_from_db = crud.get_user_by_username(db, form_data.username)
-    if not user_from_db:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user_from_db.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
-    return {"access_token": user_from_db.rz_username, "token_type": "bearer"}
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=variables.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.rz_username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.get("/users/me", response_model=schemas.User)
