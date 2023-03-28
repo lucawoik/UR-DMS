@@ -41,3 +41,12 @@ class Token(BaseModel):
     """
     access_token: str
     token_type: str
+
+
+class TokenData(BaseModel):
+    """
+    Token data class used to store the username.
+    Attributes:
+        username: str
+    """
+    username: str | None = None
