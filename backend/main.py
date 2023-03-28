@@ -25,41 +25,6 @@ def fake_hash_password(password: str):
     return "fakehashed" + password
 
 
-def verify_password(plain_password, hashed_password):
-    """
-    Method to verify the given password in plain text against the hashed string
-    :param plain_password:
-    :param hashed_password:
-    :return:
-    """
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password):
-    """
-    Generating the hash from the password in plain text
-    :param password:
-    :return:
-    """
-    return pwd_context.hash(password)
-
-
-def authenticate_user(db: Session, username: str, password: str):
-    """
-    Authenticating the user by getting the user from the db and verifying the password.
-    :param db:
-    :param username:
-    :param password:
-    :return:
-    """
-    user = crud.get_user_by_username(db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -100,6 +65,41 @@ def prepare_db():
 
 # Calling prepare_db() method
 prepare_db()
+
+
+def verify_password(plain_password, hashed_password):
+    """
+    Method to verify the given password in plain text against the hashed string
+    :param plain_password:
+    :param hashed_password:
+    :return:
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password):
+    """
+    Generating the hash from the password in plain text
+    :param password:
+    :return:
+    """
+    return pwd_context.hash(password)
+
+
+def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+    """
+    Authenticating the user by getting the user from the db and verifying the password.
+    :param db:
+    :param username:
+    :param password:
+    :return:
+    """
+    user = crud.get_user_by_username(db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
