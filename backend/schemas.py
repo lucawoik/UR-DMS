@@ -49,4 +49,4 @@ class TokenData(BaseModel):
     Attributes:
         username: str
     """
-    username: str | None = None
+    rz_username: str | None = None
