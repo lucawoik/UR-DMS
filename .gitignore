@@ -6,3 +6,6 @@ venv/
 
 # Database
 backend.db
+
+# Pycache
+__pycache__/
