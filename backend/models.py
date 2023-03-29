@@ -61,7 +61,7 @@ class OwnerTransaction(Base):
     owner_transaction_id = Column(String, primary_key=True)
     rz_username = Column(String)
     timestamp_owner_since = Column(String)
-    device_id = relationship("Device")
+    # TODO: device_id = relationship("Device")
 
 
 class LocationTransaction(Base):
@@ -77,7 +77,7 @@ class LocationTransaction(Base):
     location_transaction_id = Column(String, primary_key=True)
     room_code = Column(String)
     timestamp_located_since = Column(String)
-    device_id = relationship("Device")
+    # TODO: device_id = relationship("Device")
 
 
 class PurchasingInformation(Base):
@@ -99,4 +99,4 @@ class PurchasingInformation(Base):
     timestamp_purchase = Column(String)
     cost_centre = Column(Integer, nullable=True)
     seller = Column(String)
-    device_id = relationship("Device")
+    # TODO: device_id = relationship("Device")
