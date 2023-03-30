@@ -5,7 +5,8 @@ from pydantic import BaseModel
 
 # TODO: Add source? (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
 class User(BaseModel):
-    """ The current pydantic user schema according to the FastAPI Docs
+    """
+    The current pydantic user schema according to the FastAPI Docs
         - Currently not using a hashed password!!!
     Attributes:
         full_name : str
@@ -22,7 +23,8 @@ class User(BaseModel):
 
 
 class UserCreate(User):
-    """UserBase subclass for referencing the users password
+    """
+    UserBase subclass for referencing the users password
     Attributes:
         hashed_password : str
     """
@@ -44,6 +46,6 @@ class TokenData(BaseModel):
     """
     Token data class used to store the username.
     Attributes:
-        username: str
+        rz_username: str
     """
     rz_username: str | None = None

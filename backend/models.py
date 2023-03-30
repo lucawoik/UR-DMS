@@ -7,7 +7,8 @@ from .database import Base
 
 
 class User(Base):
-    """DB-Model class for the 'users' table.
+    """
+    DB-Model class for the 'users' table.
     Attributes:
         rz_username : str (PK)
         full_name : str
@@ -25,7 +26,8 @@ class User(Base):
 
 
 class Device(Base):
-    """DB-Model class for 'devices' table
+    """
+    DB-Model class for 'devices' table
     Attributes:
         device_id : str (PK)
         title : str
@@ -49,7 +51,8 @@ class Device(Base):
 
 
 class OwnerTransaction(Base):
-    """DB-Model class for 'owner_transactions' table
+    """
+    DB-Model class for 'owner_transactions' table
     Attributes:
         owner_transaction_id: str (PK)
         rz_username : str
@@ -65,7 +68,8 @@ class OwnerTransaction(Base):
 
 
 class LocationTransaction(Base):
-    """DB-Model class for 'location_transactions' table
+    """
+    DB-Model class for 'location_transactions' table
     Attributes:
         location_transaction_id : str (PK)
         room_code : str
@@ -81,7 +85,8 @@ class LocationTransaction(Base):
 
 
 class PurchasingInformation(Base):
-    """DB-Model class for  'purchasing_information' table
+    """
+    DB-Model class for  'purchasing_information' table
     Attributes:
         purchasing_information_id : str (PK)
         price : str
