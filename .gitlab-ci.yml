@@ -20,9 +20,9 @@ before_script:        # Logging Python version for debugging, installing and act
 
 
 stages:          # List of stages for jobs, and their order of execution
-  - build
-  - test
-  - deploy
+  - build        # TODO: Maybe unnecessary, depends probably on the frontend framework
+  - test         # TODO: Calls pytest with the corresponding test file
+  - deploy       # TODO: Depends on the requirements by Raphael
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -33,16 +33,12 @@ build-job:       # This job runs in the build stage, which runs first.
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+    - echo "Running unit tests..."
 
 lint-test-job:   # This job also runs in the test stage.
   stage: test    # It can run at the same time as unit-test-job (in parallel).
   script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - echo "Linting code..."
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
