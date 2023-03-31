@@ -1,8 +1,14 @@
+import Login from './pages/Login'
+
+import AbstractPage from './components/AbstractPage'
+
+const authorized = false;
+
 const App = () => {
   return (
-    <div>
-      <h1>Hello World!</h1>
-    </div>
+    <AbstractPage>
+        {authorized ? <></>  : <Login />}
+    </AbstractPage>
   );
 }
 
