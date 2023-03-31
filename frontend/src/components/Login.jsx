@@ -2,7 +2,8 @@ import React from 'react'
 
 const Login = () => {
     return (
-        <div className="column is-two-thirds m-auto">
+        <div className="mt-6 mb-6">
+            <div className="column is-two-thirds m-auto">
             {/* TODO: Taken from https://github.com/sixfwa/react-fastapi/blob/main/frontend/src/components/Login.jsx */}
             <form className="box">
                 <h1 className="title has-text-centered">Login</h1>
@@ -37,6 +38,7 @@ const Login = () => {
                     </button>
                 </div>
             </form>
+        </div>
         </div>
     )
 }
