@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import DeviceTable from "./components/DeviceTable";
 import CreateDevice from "./components/CreateDevice";
 import DeviceModal from "./components/DeviceModal";
+import DeviceDetail from "./components/DeviceDetail";
 
 const authorized = false;
 
@@ -16,7 +17,8 @@ const App = () => {
             <Dashboard/>
             <CreateDevice/>
             <DeviceTable/>
-            <DeviceModal/>
+            {/*<DeviceModal/>*/}
+            <DeviceDetail />
         </AbstractPage>
     );
 }
