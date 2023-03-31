@@ -1,7 +1,8 @@
-import Login from './pages/Login'
+import React from "react";
 
+import Login from './components/Login'
 import AbstractPage from './components/AbstractPage'
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./components/Dashboard";
 
 const authorized = false;
 
