@@ -143,6 +143,7 @@ class LocationTransactionCreate(OwnerTransactionBase):
     """
     Location transaction create
     """
+    device_id: str
     pass
 
 
