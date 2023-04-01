@@ -77,3 +77,36 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     db.commit()
     db.refresh(db_device)
     return db_device
+
+
+def get_owner_transactions(db: Session):
+    """
+    Get all owner transactions from the database.
+    :param db:
+    :return:
+    """
+    return db.query(models.OwnerTransaction).all()
+
+
+def get_owner_transaction_by_device_id(db: Session, device_id: str):
+    """
+    Get an owner transaction by device id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id)
+
+
+def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransactionCreate):
+    """
+    Create an owner transaction according to the schema OwnerTransactionCreate and add it to the database.
+    :param db:
+    :param owner_transaction:
+    :return:
+    """
+    db_owner_transaction = models.OwnerTransaction(**owner_transaction.dict(), owner_transaction_id=str(uuid.uuid4()))
+    db.add(db_owner_transaction)
+    db.commit()
+    db.refresh(db_owner_transaction)
+    return owner_transaction
