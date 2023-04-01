@@ -2,7 +2,7 @@ import React from "react";
 
 const Dashboard = () => {
     return (
-        <div className="mt-6 mb-6">
+        <div className="mt-6 mb-6 box">
             <div className="tile is-ancestor">
                 <div className="tile is-vertical">
                     <div className="tile">
