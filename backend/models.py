@@ -51,6 +51,7 @@ class Device(Base):
 
     owner_transactions = relationship("OwnerTransaction", back_populates="devices")
     location_transactions = relationship("LocationTransaction", back_populates="devices")
+    purchasing_information = relationship("PurchasingInformation", back_populates="devices")
 
 
 class OwnerTransaction(Base):
@@ -111,4 +112,6 @@ class PurchasingInformation(Base):
     timestamp_purchase = Column(String)
     cost_centre = Column(Integer, nullable=True)
     seller = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="purchasing_information")

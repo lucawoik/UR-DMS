@@ -182,6 +182,7 @@ class PurchasingInformationCreate(PurchasingInformationBase):
     """
     Purchasing information create
     """
+    device_id: str
     pass
 
 
