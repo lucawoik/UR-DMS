@@ -159,3 +159,41 @@ class LocationTransaction(OwnerTransactionBase):
 
     class Config:
         orm_mode = True
+
+
+class PurchasingInformationBase(BaseModel):
+    """
+    Purchasing information base, which handles all necessary data purchasing information needs to have.
+    Attributes:
+        price: str
+        timestamp_warranty_end: str
+        timestamp_purchase: str
+        seller: str
+    """
+    price: str
+    timestamp_warranty_end: str
+    timestamp_purchase: str
+    seller: str
+
+
+class PurchasingInformationCreate(PurchasingInformationBase):
+    """
+    Purchasing information create
+    """
+    pass
+
+
+class PurchasingInformation(PurchasingInformationBase):
+    """
+    Purchasing infromation pydantic schema,
+    which inherits all the necessary attributs from the PurchasingInformationBase-class.
+
+    Sets orm_mode to true.
+
+    Attributes:
+        purchasing_information_id: str
+    """
+    purchasing_information_id: str
+
+    class Config:
+        orm_mode = True
