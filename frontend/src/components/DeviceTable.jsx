@@ -6,7 +6,7 @@ const DeviceTable = () => {
             <h1 className="title">Liste aller Geräte</h1>
             <h2 className="subtitle">Auflistung aller registrierten Geräte der Uni Regensburg.</h2>
             <div className="table-container">
-                <table className="table is-hoverable">
+                <table className="table is-hoverable is-fullwidth">
                     <thead>
                         <tr>
                             <th>Gerät</th>

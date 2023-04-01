@@ -8,7 +8,7 @@ const Dashboard = () => {
                     <div className="tile">
                         <div className="tile is-parent is-vertical">
                             <article className="tile is-child box has-background-success-light">
-                                <h1 className="title">IMPORT</h1>
+                                <h1 className="title">Import</h1>
                                 <h2 className="subtitle">JSON-Datei importieren</h2>
                                 <div className="column has-text-right">
                                     <button className="button is-success">
@@ -19,7 +19,7 @@ const Dashboard = () => {
                         </div>
                         <div className="tile is-parent">
                             <article className="tile is-child box has-background-link-light">
-                                <h1 className="title">EXPORT</h1>
+                                <h1 className="title">Export</h1>
                                 <h2 className="subtitle">Datenbank als JSON-Datei exportieren</h2>
                                 <div className="column has-text-right">
                                     <button className="button is-link">
@@ -36,7 +36,7 @@ const Dashboard = () => {
                     <div className="tile">
                         <div className="tile is-parent is-vertical">
                             <article className="tile is-child box has-background-danger-light">
-                                <h1 className="title">PURGE</h1>
+                                <h1 className="title">Bereinigen</h1>
                                 <h2 className="subtitle">Datenbank entleeren! Daten sollten vorher per Export gesichert werden.</h2>
                                 <div className="column has-text-right">
                                     <button className="button is-danger">
