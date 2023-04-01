@@ -30,39 +30,6 @@ def get_db():
         db.close()
 
 
-# TODO: Remove print statements
-def prepare_db():
-    """
-    Method which prepares the database with the necessary user data.
-    :return:
-    """
-    db = SessionLocal()
-    # Checking for existing user with username "user" and creating a new one if not existent
-    if not crud.get_user_by_username(db, "user"):
-        user = schemas.UserCreate(rz_username="user",
-                                  full_name="User User",
-                                  organisation_unit="1111111",
-                                  has_admin_privileges=False,
-                                  hashed_password=get_password_hash(variables.USER_PASSWORD))
-        crud.create_user(db, user)
-    else:
-        print("User with rz_username: user exists already")
-    # Checking for existing user with username "admin" and creating a new one if not existent
-    if not crud.get_user_by_username(db, "admin"):
-        admin = schemas.UserCreate(rz_username="admin",
-                                   full_name="User Admin",
-                                   organisation_unit="2222222",
-                                   has_admin_privileges=True,
-                                   hashed_password=get_password_hash(variables.ADMIN_PASSWORD))
-        crud.create_user(db, admin)
-    else:
-        print("User with rz_username: admin exists already")
-
-
-# Calling prepare_db() method
-prepare_db()
-
-
 def verify_password(plain_password, hashed_password):
     """
     Method to verify the given password in plain text against the hashed string
@@ -114,6 +81,39 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, variables.SECRET_KEY, algorithm=variables.ALGORITHM)
     return encoded_jwt
+
+
+# TODO: Remove print statements
+def prepare_db():
+    """
+    Method which prepares the database with the necessary user data.
+    :return:
+    """
+    db = SessionLocal()
+    # Checking for existing user with username "user" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "user"):
+        user = schemas.UserCreate(rz_username="user",
+                                  full_name="User User",
+                                  organisation_unit="1111111",
+                                  has_admin_privileges=False,
+                                  hashed_password=get_password_hash(variables.USER_PASSWORD))
+        crud.create_user(db, user)
+    else:
+        print("User with rz_username: user exists already")
+    # Checking for existing user with username "admin" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "admin"):
+        admin = schemas.UserCreate(rz_username="admin",
+                                   full_name="User Admin",
+                                   organisation_unit="2222222",
+                                   has_admin_privileges=True,
+                                   hashed_password=get_password_hash(variables.ADMIN_PASSWORD))
+        crud.create_user(db, admin)
+    else:
+        print("User with rz_username: admin exists already")
+
+
+# Calling prepare_db() method
+prepare_db()
 
 
 @app.post("/token")
