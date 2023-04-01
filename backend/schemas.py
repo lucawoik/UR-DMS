@@ -53,3 +53,44 @@ class TokenData(BaseModel):
         rz_username: str
     """
     rz_username: str | None = None
+
+
+class DeviceBase(BaseModel):
+    """
+    Device Base, which handles all the necessary data a device needs to have
+    Attributes:
+        title: str
+        device_type: str
+        rz_username_buyer: str
+        serial_number: str
+        image_url: str
+    """
+    title: str
+    device_type: str
+    rz_username_buyer: str
+    serial_number: str
+    image_url: str
+
+
+class DeviceCreate(DeviceBase):
+    """
+    Device Create
+    """
+    pass
+
+
+class Device(DeviceBase):
+    """
+    Device pydantic schema, which inherits all necessary attributes from Device Base.
+    Configures Device for orm mode.
+    Attributes:
+        device_id: str
+        description: str
+        accessories: str
+    """
+    device_id: str
+    description: str
+    accessories: str
+
+    class Config:
+        orm_mode = True
