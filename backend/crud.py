@@ -143,3 +143,12 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     db.commit()
     db.refresh(db_location_transaction)
     return location_transaction
+
+
+def get_purchasing_information_by_device_id(db: Session, device_id: str):
+    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id)
+
+
+def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate):
+    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict(),
+                                                             purchasing_information_id=str(uuid.uuid4()))
