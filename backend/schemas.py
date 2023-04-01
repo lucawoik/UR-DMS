@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 # TODO: Add source? (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
-class User(BaseModel):
+class UserBase(BaseModel):
     """
     The current pydantic user schema according to the FastAPI Docs
         - Currently not using a hashed password!!!
@@ -18,17 +18,21 @@ class User(BaseModel):
     organisation_unit: str
     has_admin_privileges: bool
 
-    class Config:
-        orm_mode = True
 
-
-class UserCreate(User):
+class UserCreate(UserBase):
     """
     UserBase subclass for referencing the users password
     Attributes:
         hashed_password : str
     """
     hashed_password: str
+
+
+class User(UserBase):
+    pass
+
+    class Config:
+        orm_mode = True
 
 
 class Token(BaseModel):
