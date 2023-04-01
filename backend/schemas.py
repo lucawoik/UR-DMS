@@ -129,7 +129,7 @@ class OwnerTransaction(OwnerTransactionBase):
 
 class LocationTransactionBase(BaseModel):
     """
-    Location transaction base, which handles all necessary data an location transaction needs to have.
+    Location transaction base, which handles all necessary data a location transaction needs to have.
     Attributes:
         room_code: str
         timestamp_located_since: str
