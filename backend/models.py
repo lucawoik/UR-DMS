@@ -50,6 +50,7 @@ class Device(Base):
     image_url = Column(String)
 
     owner_transactions = relationship("OwnerTransaction", back_populates="devices")
+    location_transactions = relationship("LocationTransaction", back_populates="devices")
 
 
 class OwnerTransaction(Base):
@@ -85,7 +86,9 @@ class LocationTransaction(Base):
     location_transaction_id = Column(String, primary_key=True)
     room_code = Column(String)
     timestamp_located_since = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="location_transactions")
 
 
 class PurchasingInformation(Base):
