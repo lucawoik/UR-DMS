@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -172,14 +172,14 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
 
 
 @app.post("/import")
-async def import_database_json():
+async def import_database_json(file: UploadFile):
     """
     Takes a .json file and imports it onto the existing database.
         - Existing entries in the database are not deleted
         - Merge conflicts are ignored
     :return:
     """
-    return None
+    return {"filename": file.filename}
 
 
 @app.get("/export")
