@@ -110,3 +110,36 @@ def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransa
     db.commit()
     db.refresh(db_owner_transaction)
     return owner_transaction
+
+
+def get_location_transactions(db: Session):
+    """
+    Get all location transactions from the database.
+    :param db:
+    :return:
+    """
+    return db.query(models.LocationTransaction).all()
+
+
+def get_location_transaction_by_device_id(db: Session, device_id: str):
+    """
+    Get a location transaction by device id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id)
+
+
+def create_location_transaction(db: Session, location_transaction: schemas.LocationTransactionCreate):
+    """
+    Create a location transaction according to the schema LocationTransactionCreate and add it to the database.
+    :param db:
+    :param location_transaction:
+    :return:
+    """
+    db_location_transaction = models.LocationTransaction(**location_transaction.dict(), location_transaction_id=str(uuid.uuid4()))
+    db.add(db_location_transaction)
+    db.commit()
+    db.refresh(db_location_transaction)
+    return location_transaction
