@@ -45,7 +45,7 @@ class Device(Base):
     device_type = Column(String)
     description = Column(String, nullable=True)
     accessories = Column(String, nullable=True)
-    rz_username_buyer = Column(String, unique=True)
+    rz_username_buyer = Column(String)
     serial_number = Column(String)
     image_url = Column(String)
 
