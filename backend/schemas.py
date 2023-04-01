@@ -94,3 +94,68 @@ class Device(DeviceBase):
 
     class Config:
         orm_mode = True
+
+
+class OwnerTransactionBase(BaseModel):
+    """
+    Owner transaction base, which handles all necessary data an owner transaction needs to have.
+    Attributes:
+        rz_username: str
+        timestamp_owner_since: str
+    """
+    rz_username: str
+    timestamp_owner_since: str
+
+
+class OwnerTransactionCreate(OwnerTransactionBase):
+    """
+    Owner transaction create
+    """
+    pass
+
+
+class OwnerTransaction(OwnerTransactionBase):
+    """
+    Owner transaction pydantic schema, which inherits all the necessary attributs from the OwnerTransactionBase-class.
+    Sets orm_mode to true.
+    Attributes:
+        owner_transaction_id: str
+    """
+    owner_transaction_id: str
+
+    class Config:
+        orm_mode = True
+
+
+class LocationTransactionBase(BaseModel):
+    """
+    Location transaction base, which handles all necessary data an location transaction needs to have.
+    Attributes:
+        room_code: str
+        timestamp_located_since: str
+    """
+    room_code: str
+    timestamp_located_since: str
+
+
+class LocationTransactionCreate(OwnerTransactionBase):
+    """
+    Location transaction create
+    """
+    pass
+
+
+class LocationTransaction(OwnerTransactionBase):
+    """
+    Location transaction pydantic schema,
+    which inherits all the necessary attributs from the LocationTransactionBase-class.
+
+    Sets orm_mode to true.
+
+    Attributes:
+        location_transaction_id: str
+    """
+    location_transaction_id: str
+
+    class Config:
+        orm_mode = True
