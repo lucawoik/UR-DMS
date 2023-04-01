@@ -21,6 +21,7 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
+# TODO: Remove
 def fake_hash_password(password: str):
     return "fakehashed" + password
 
