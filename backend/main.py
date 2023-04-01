@@ -171,6 +171,35 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
     return user
 
 
+@app.post("/import")
+async def import_database_json():
+    """
+    Takes a .json file and imports it onto the existing database.
+        - Existing entries in the database are not deleted
+        - Merge conflicts are ignored
+    :return:
+    """
+    return None
+
+
+@app.get("/export")
+async def export_database_json():
+    """
+    Exports the entire database as .json file aside from the 'users' table.
+    :return:
+    """
+    return None
+
+
+@app.delete("/purge")
+async def purge_database():
+    """
+    Purges the entire database aside from the 'users' table
+    :return:
+    """
+    return None
+
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
