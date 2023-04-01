@@ -111,6 +111,7 @@ class OwnerTransactionCreate(OwnerTransactionBase):
     """
     Owner transaction create
     """
+    device_id: str
     pass
 
 

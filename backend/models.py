@@ -49,6 +49,8 @@ class Device(Base):
     serial_number = Column(String)
     image_url = Column(String)
 
+    owner_transactions = relationship("OwnerTransaction", back_populates="devices")
+
 
 class OwnerTransaction(Base):
     """
@@ -64,7 +66,9 @@ class OwnerTransaction(Base):
     owner_transaction_id = Column(String, primary_key=True)
     rz_username = Column(String)
     timestamp_owner_since = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="owner_transactions")
 
 
 class LocationTransaction(Base):
