@@ -7,6 +7,7 @@ import DeviceTable from "./components/DeviceTable";
 import CreateDevice from "./components/CreateDevice";
 import DeviceModal from "./components/DeviceModal";
 import DeviceDetail from "./components/DeviceDetail";
+import History from "./components/History";
 
 const authorized = false;
 
@@ -19,6 +20,7 @@ const App = () => {
             <DeviceTable/>
             {/*<DeviceModal/>*/}
             <DeviceDetail />
+            <History />
         </AbstractPage>
     );
 }
