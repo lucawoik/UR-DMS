@@ -60,13 +60,17 @@ class DeviceBase(BaseModel):
     Device Base, which handles all the necessary data a device needs to have
     Attributes:
         title: str
-        device_type: str
+        device_type: str#
+        description: str
+        accessories: str
         rz_username_buyer: str
         serial_number: str
         image_url: str
     """
     title: str
     device_type: str
+    description: str
+    accessories: str
     rz_username_buyer: str
     serial_number: str
     image_url: str
@@ -85,12 +89,8 @@ class Device(DeviceBase):
     Configures Device for orm mode.
     Attributes:
         device_id: str
-        description: str
-        accessories: str
     """
     device_id: str
-    description: str
-    accessories: str
 
     class Config:
         orm_mode = True
