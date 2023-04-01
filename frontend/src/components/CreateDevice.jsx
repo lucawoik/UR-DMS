@@ -11,7 +11,7 @@ const CreateDevice = () => {
                                 <h1 className="title">Gerät anlegen</h1>
                                 <h2 className="subtitle">Anlegen eines neuen Geräts in der DMS-Datenbank.</h2>
                                 <div className="column has-text-right">
-                                    <button className="button is-primary">
+                                    <button className="button is-primary is-fullwidth">
                                         Neu anlegen
                                     </button>
                                 </div>
