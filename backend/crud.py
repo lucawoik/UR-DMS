@@ -105,7 +105,7 @@ def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransa
     :param owner_transaction:
     :return:
     """
-    db_owner_transaction = models.OwnerTransaction(**owner_transaction.dict(), owner_transaction_id=str(uuid.uuid4()))
+    db_owner_transaction = models.OwnerTransaction(**owner_transaction.dict())
     db.add(db_owner_transaction)
     db.commit()
     db.refresh(db_owner_transaction)
@@ -138,7 +138,7 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     :param location_transaction:
     :return:
     """
-    db_location_transaction = models.LocationTransaction(**location_transaction.dict(), location_transaction_id=str(uuid.uuid4()))
+    db_location_transaction = models.LocationTransaction(**location_transaction.dict())
     db.add(db_location_transaction)
     db.commit()
     db.refresh(db_location_transaction)
@@ -146,12 +146,24 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
 
 
 def get_purchasing_information_by_device_id(db: Session, device_id: str):
+    """
+    Find purchasing information for specific device using the device_id
+    :param db:
+    :param device_id:
+    :return:
+    """
     return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id)
 
 
 def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate):
-    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict(),
-                                                             purchasing_information_id=str(uuid.uuid4()))
+    """
+    Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
+    database.
+    :param db:
+    :param purchasing_information:
+    :return:
+    """
+    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict())
     db.add(db_purchasing_information)
     db.commit()
     db.refresh(db_purchasing_information)
