@@ -192,7 +192,7 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
     return {"filename": file.filename}
 
 
-@app.get("/export" tags=["Import/Export/Purge Database"])
+@app.get("/export", tags=["Import/Export/Purge Database"])
 async def export_database_json():
     """
     Exports the entire database as .json file aside from the 'users' table.
@@ -201,7 +201,7 @@ async def export_database_json():
     return None
 
 
-@app.delete("/purge" tags=["Import/Export/Purge Database"])
+@app.delete("/purge", tags=["Import/Export/Purge Database"])
 async def purge_database():
     """
     Purges the entire database aside from the 'users' table
