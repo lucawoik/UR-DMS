@@ -109,7 +109,7 @@ def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransa
     db.add(db_owner_transaction)
     db.commit()
     db.refresh(db_owner_transaction)
-    return owner_transaction
+    return db_owner_transaction
 
 
 def get_location_transactions(db: Session):
@@ -142,7 +142,7 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     db.add(db_location_transaction)
     db.commit()
     db.refresh(db_location_transaction)
-    return location_transaction
+    return db_location_transaction
 
 
 def get_purchasing_information_by_device_id(db: Session, device_id: str):
@@ -155,4 +155,4 @@ def create_purchasing_information(db: Session, purchasing_information: schemas.P
     db.add(db_purchasing_information)
     db.commit()
     db.refresh(db_purchasing_information)
-    return purchasing_information
+    return db_purchasing_information
