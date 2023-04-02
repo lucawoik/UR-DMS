@@ -72,7 +72,7 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     :param device:
     :return:
     """
-    db_device = models.Device(**device.dict(), device_id=str(uuid.uuid4()))
+    db_device = models.Device(**device.dict())
     db.add(db_device)
     db.commit()
     db.refresh(db_device)

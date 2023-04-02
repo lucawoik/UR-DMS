@@ -1,4 +1,5 @@
 # Creating the pydantic Models
+import uuid
 
 from pydantic import BaseModel
 
@@ -60,7 +61,7 @@ class DeviceBase(BaseModel):
     Device Base, which handles all the necessary data a device needs to have
     Attributes:
         title: str
-        device_type: str#
+        device_type: str
         description: str
         accessories: str
         rz_username_buyer: str
@@ -69,8 +70,8 @@ class DeviceBase(BaseModel):
     """
     title: str
     device_type: str
-    description: str
-    accessories: str
+    description: str | None = None
+    accessories: str | None = None
     rz_username_buyer: str
     serial_number: str
     image_url: str
@@ -78,8 +79,12 @@ class DeviceBase(BaseModel):
 
 class DeviceCreate(DeviceBase):
     """
-    Device Create
+    Device Create.
+    Automatically creates a uuid if none is given.
+    Attributes:
+        device_id: str
     """
+    device_id: str | None = str(uuid.uuid4())
     pass
 
 
@@ -87,10 +92,8 @@ class Device(DeviceBase):
     """
     Device pydantic schema, which inherits all necessary attributes from Device Base.
     Configures Device for orm mode.
-    Attributes:
-        device_id: str
     """
-    device_id: str
+    pass
 
     class Config:
         orm_mode = True
