@@ -3,6 +3,8 @@ import uuid
 
 from pydantic import BaseModel
 
+from backend import helpers
+
 
 # TODO: Add source? (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
 class UserBase(BaseModel):
@@ -84,7 +86,7 @@ class DeviceCreate(DeviceBase):
     Attributes:
         device_id: str
     """
-    device_id: str | None = str(uuid.uuid4())
+    device_id: str | None = helpers.get_uuid()
     pass
 
 
@@ -113,8 +115,13 @@ class OwnerTransactionBase(BaseModel):
 class OwnerTransactionCreate(OwnerTransactionBase):
     """
     Owner transaction create
+    Automatically creates a uuid if none is given.
+    Attributes:
+        device_id: str
+        owner_transaction_id: str
     """
     device_id: str
+    owner_transaction_id: str | None = helpers.get_uuid()
     pass
 
 
@@ -122,10 +129,8 @@ class OwnerTransaction(OwnerTransactionBase):
     """
     Owner transaction pydantic schema, which inherits all the necessary attributs from the OwnerTransactionBase-class.
     Sets orm_mode to true.
-    Attributes:
-        owner_transaction_id: str
     """
-    owner_transaction_id: str
+    pass
 
     class Config:
         orm_mode = True
@@ -142,25 +147,27 @@ class LocationTransactionBase(BaseModel):
     timestamp_located_since: str
 
 
-class LocationTransactionCreate(OwnerTransactionBase):
+class LocationTransactionCreate(LocationTransactionBase):
     """
-    Location transaction create
+    Location transaction create.
+    Automatically creates a uuid if none is given.
+    Attributes:
+        device_id: str
+        location_transaction_id: str
     """
     device_id: str
+    location_transaction_id: str | None = helpers.get_uuid()
     pass
 
 
-class LocationTransaction(OwnerTransactionBase):
+class LocationTransaction(LocationTransactionBase):
     """
     Location transaction pydantic schema,
     which inherits all the necessary attributs from the LocationTransactionBase-class.
 
     Sets orm_mode to true.
-
-    Attributes:
-        location_transaction_id: str
     """
-    location_transaction_id: str
+    pass
 
     class Config:
         orm_mode = True
@@ -178,14 +185,20 @@ class PurchasingInformationBase(BaseModel):
     price: str
     timestamp_warranty_end: str
     timestamp_purchase: str
+    cost_centre: str | None = None
     seller: str
 
 
 class PurchasingInformationCreate(PurchasingInformationBase):
     """
     Purchasing information create
+    Automatically creates a uuid if none is given.
+    Attributes:
+        device_id: str
+        purchasing_information_id: str
     """
     device_id: str
+    purchasing_information_id: str | None = helpers.get_uuid()
     pass
 
 
@@ -195,11 +208,8 @@ class PurchasingInformation(PurchasingInformationBase):
     which inherits all the necessary attributs from the PurchasingInformationBase-class.
 
     Sets orm_mode to true.
-
-    Attributes:
-        purchasing_information_id: str
     """
-    purchasing_information_id: str
+    pass
 
     class Config:
         orm_mode = True
