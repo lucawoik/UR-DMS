@@ -167,7 +167,7 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
     return user
 
 
-@app.post("/import")
+@app.post("/import", tags=["Import/Export/Purge Database"])
 async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
     """
     Takes a .json file and imports it onto the existing database.
@@ -192,7 +192,7 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
     return {"filename": file.filename}
 
 
-@app.get("/export")
+@app.get("/export" tags=["Import/Export/Purge Database"])
 async def export_database_json():
     """
     Exports the entire database as .json file aside from the 'users' table.
@@ -201,7 +201,7 @@ async def export_database_json():
     return None
 
 
-@app.delete("/purge")
+@app.delete("/purge" tags=["Import/Export/Purge Database"])
 async def purge_database():
     """
     Purges the entire database aside from the 'users' table
