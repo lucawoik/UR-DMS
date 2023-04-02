@@ -202,12 +202,12 @@ async def export_database_json():
 
 
 @app.delete("/purge", tags=["Import/Export/Purge Database"])
-async def purge_database():
+async def purge_database(db: Session = Depends(get_db)):
     """
     Purges the entire database aside from the 'users' table
     :return:
     """
-    return None
+    return crud.delete_all_except_users(db)
 
 
 @app.get("/", response_model=schemas.Device)

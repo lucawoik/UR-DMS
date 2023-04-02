@@ -168,3 +168,12 @@ def create_purchasing_information(db: Session, purchasing_information: schemas.P
     db.commit()
     db.refresh(db_purchasing_information)
     return db_purchasing_information
+
+
+def delete_all_except_users(db: Session):
+    db.query(models.Device).delete()
+    db.query(models.OwnerTransaction).delete()
+    db.query(models.LocationTransaction).delete()
+    db.query(models.PurchasingInformation).delete()
+    db.commit()
+    return True
