@@ -117,7 +117,7 @@ def prepare_db():
 prepare_db()
 
 
-@app.post("/token")
+@app.post("/token", tags=["Authentication"])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
@@ -140,7 +140,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me", response_model=schemas.User)
+@app.get("/users/me", response_model=schemas.User, tags=["Authentication"])
 async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     """
     Returns the currently authenticated user using the token given from oauth2
@@ -230,13 +230,13 @@ async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 
-@app.get("/users/")
+@app.get("/users/", tags=["Authentication"])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@app.get("/users/by-username/{username}/", response_model=schemas.User)
+@app.get("/users/by-username/{username}/", response_model=schemas.User, tags=["Authentication"])
 def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, rz_username)
     if db_user is None:
