@@ -4,8 +4,9 @@
 # Python virtual enviornment
 venv/
 
-# Database
+# Database and exports
 backend.db
+export.json
 
 # Pycache
 __pycache__/

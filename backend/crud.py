@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, class_mapper
 
 from . import models, schemas
 
@@ -182,3 +182,34 @@ def delete_all_except_users(db: Session):
     db.query(models.PurchasingInformation).delete()
     db.commit()
     return True
+
+
+def export_all(db: Session):
+    # TODO: Parts of this code are heavily inspired by ChatGPT
+    export_dict = {
+        "devices": [],
+        "owner_transactions": [],
+        "location_transactions": [],
+        "purchasing_information": []
+    }
+    devices_list = db.query(models.Device).all()
+    for device in devices_list:
+        device_dict = device.__dict__
+        device_dict.pop("_sa_instance_state", None)
+        export_dict["devices"].append(device_dict)
+    owner_transactions_list = db.query(models.OwnerTransaction).all()
+    for owner_transaction in owner_transactions_list:
+        owner_transaction_dict = owner_transaction.__dict__
+        owner_transaction_dict.pop("_sa_instance_state", None)
+        export_dict["owner_transactions"].append(owner_transaction_dict)
+    location_transactions_list = db.query(models.LocationTransaction).all()
+    for location_transaction in location_transactions_list:
+        location_transaction_dict = location_transaction.__dict__
+        location_transaction_dict.pop("_sa_instance_state", None)
+        export_dict["location_transactions"].append(location_transaction_dict)
+    purchasing_information_list = db.query(models.PurchasingInformation).all()
+    for purchasing_information in purchasing_information_list:
+        purchasing_information_dict = purchasing_information.__dict__
+        purchasing_information_dict.pop("_sa_instance_state", None)
+        export_dict["purchasing_information"].append(purchasing_information_dict)
+    return export_dict

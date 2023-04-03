@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import FileResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -193,12 +194,20 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
 
 
 @app.get("/export", tags=["Import/Export/Purge Database"])
-async def export_database_json():
+async def export_database_json(db: Session = Depends(get_db)):
     """
     Exports the entire database as .json file aside from the 'users' table.
     :return:
     """
-    return None
+    # TODO: Parts of this code are heavily inspired by ChatGPT
+    export = crud.export_all(db)
+
+    # Write the data to a JSON file
+    with open("export.json", "w") as f:
+        json.dump(export, f, default=str, indent=4, ensure_ascii=False)
+
+    # Return the file as a download
+    return FileResponse("export.json", media_type="application/json", filename="export.json")
 
 
 @app.delete("/purge", tags=["Import/Export/Purge Database"])
@@ -212,7 +221,7 @@ async def purge_database(db: Session = Depends(get_db)):
 
 @app.get("/", response_model=schemas.Device)
 def read_root(db: Session = Depends(get_db)):
-    return crud.get_device_by_id(db, "1")
+    return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
 
 
 @app.post("/")
