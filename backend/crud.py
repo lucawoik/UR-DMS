@@ -171,6 +171,11 @@ def create_purchasing_information(db: Session, purchasing_information: schemas.P
 
 
 def delete_all_except_users(db: Session):
+    """
+    Deletes all content from the tables Device, OwnerTransaction, LocationTransaction and Purchasing information.
+    :param db:
+    :return:
+    """
     db.query(models.Device).delete()
     db.query(models.OwnerTransaction).delete()
     db.query(models.LocationTransaction).delete()
