@@ -1,8 +1,10 @@
+import json
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import FileResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -21,10 +23,6 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-def fake_hash_password(password: str):
-    return "fakehashed" + password
-
-
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -32,39 +30,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-# TODO: Remove print statements
-def prepare_db():
-    """
-    Method which prepares the database with the necessary user data.
-    :return:
-    """
-    db = SessionLocal()
-    # Checking for existing user with username "user" and creating a new one if not existent
-    if not crud.get_user_by_username(db, "user"):
-        user = schemas.UserCreate(rz_username="user",
-                                  full_name="User User",
-                                  organisation_unit="1111111",
-                                  has_admin_privileges=False,
-                                  hashed_password=get_password_hash(variables.USER_PASSWORD))
-        crud.create_user(db, user)
-    else:
-        print("User with rz_username: user exists already")
-    # Checking for existing user with username "admin" and creating a new one if not existent
-    if not crud.get_user_by_username(db, "admin"):
-        admin = schemas.UserCreate(rz_username="admin",
-                                   full_name="User Admin",
-                                   organisation_unit="2222222",
-                                   has_admin_privileges=True,
-                                   hashed_password=get_password_hash(variables.ADMIN_PASSWORD))
-        crud.create_user(db, admin)
-    else:
-        print("User with rz_username: admin exists already")
-
-
-# Calling prepare_db() method
-prepare_db()
 
 
 def verify_password(plain_password, hashed_password):
@@ -120,7 +85,40 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-@app.post("/token")
+# TODO: Remove print statements
+def prepare_db():
+    """
+    Method which prepares the database with the necessary user data.
+    :return:
+    """
+    db = SessionLocal()
+    # Checking for existing user with username "user" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "user"):
+        user = schemas.UserCreate(rz_username="user",
+                                  full_name="User User",
+                                  organisation_unit="1111111",
+                                  has_admin_privileges=False,
+                                  hashed_password=get_password_hash(variables.USER_PASSWORD))
+        crud.create_user(db, user)
+    else:
+        print("User with rz_username: user exists already")
+    # Checking for existing user with username "admin" and creating a new one if not existent
+    if not crud.get_user_by_username(db, "admin"):
+        admin = schemas.UserCreate(rz_username="admin",
+                                   full_name="User Admin",
+                                   organisation_unit="2222222",
+                                   has_admin_privileges=True,
+                                   hashed_password=get_password_hash(variables.ADMIN_PASSWORD))
+        crud.create_user(db, admin)
+    else:
+        print("User with rz_username: admin exists already")
+
+
+# Calling prepare_db() method
+prepare_db()
+
+
+@app.post("/token", tags=["Authentication"])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
@@ -143,7 +141,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me", response_model=schemas.User)
+@app.get("/users/me", response_model=schemas.User, tags=["Authentication"])
 async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     """
     Returns the currently authenticated user using the token given from oauth2
@@ -170,9 +168,64 @@ async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Sessi
     return user
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.post("/import", tags=["Import/Export/Purge Database"])
+async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
+    """
+    Takes a .json file and imports it onto the existing database.
+        - Existing entries in the database are not deleted
+        - Merge conflicts are ignored
+    :return:
+    """
+    data = json.loads(await file.read())
+    success = crud.import_json(db, data)
+    if success:
+        return {"filename": file.filename}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Unique constraint was violated by the imported data."
+        )
+
+
+@app.get("/export", tags=["Import/Export/Purge Database"])
+async def export_database_json(db: Session = Depends(get_db)):
+    """
+    Exports the entire database as .json file aside from the 'users' table.
+    :return:
+    """
+    # TODO: Parts of this code are heavily inspired by ChatGPT
+    export = crud.export_all(db)
+
+    # Write the data to a JSON file
+    with open("export.json", "w") as f:
+        json.dump(export, f, default=str, indent=4, ensure_ascii=False)
+
+    # Return the file as a download
+    return FileResponse("export.json", media_type="application/json", filename="export.json")
+
+
+@app.delete("/purge", tags=["Import/Export/Purge Database"])
+async def purge_database(db: Session = Depends(get_db)):
+    """
+    Purges the entire database aside from the 'users' table
+    :return:
+    """
+    return crud.delete_all_except_users(db)
+
+
+@app.get("/", response_model=schemas.Device)
+def read_root(db: Session = Depends(get_db)):
+    return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
+
+
+@app.post("/")
+def post_root(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+    return crud.create_device(db, device)
+
+
+@app.post("/owner-transaction")
+def post_root(owner_transaction: schemas.OwnerTransactionCreate, db: Session = Depends(get_db)):
+    return crud.create_owner_transaction(db, owner_transaction)
 
 
 @app.get("/test/")
@@ -180,13 +233,13 @@ async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 
-@app.get("/users/")
+@app.get("/users/", tags=["Authentication"])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@app.get("/users/by-username/{username}/", response_model=schemas.User)
+@app.get("/users/by-username/{username}/", response_model=schemas.User, tags=["Authentication"])
 def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, rz_username)
     if db_user is None:

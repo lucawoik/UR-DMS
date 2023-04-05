@@ -45,9 +45,13 @@ class Device(Base):
     device_type = Column(String)
     description = Column(String, nullable=True)
     accessories = Column(String, nullable=True)
-    rz_username_buyer = Column(String, unique=True)
+    rz_username_buyer = Column(String)
     serial_number = Column(String)
     image_url = Column(String)
+
+    owner_transactions = relationship("OwnerTransaction", back_populates="devices")
+    location_transactions = relationship("LocationTransaction", back_populates="devices")
+    purchasing_information = relationship("PurchasingInformation", back_populates="devices")
 
 
 class OwnerTransaction(Base):
@@ -64,7 +68,9 @@ class OwnerTransaction(Base):
     owner_transaction_id = Column(String, primary_key=True)
     rz_username = Column(String)
     timestamp_owner_since = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="owner_transactions")
 
 
 class LocationTransaction(Base):
@@ -81,7 +87,9 @@ class LocationTransaction(Base):
     location_transaction_id = Column(String, primary_key=True)
     room_code = Column(String)
     timestamp_located_since = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="location_transactions")
 
 
 class PurchasingInformation(Base):
@@ -104,4 +112,6 @@ class PurchasingInformation(Base):
     timestamp_purchase = Column(String)
     cost_centre = Column(Integer, nullable=True)
     seller = Column(String)
-    # TODO: device_id = relationship("Device")
+
+    device_id = Column(String, ForeignKey("devices.device_id"))
+    devices = relationship("Device", back_populates="purchasing_information")
