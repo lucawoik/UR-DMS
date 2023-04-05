@@ -213,6 +213,45 @@ async def purge_database(db: Session = Depends(get_db)):
     return crud.delete_all_except_users(db)
 
 
+@app.get("/devices", tags=["Devices"])
+async def get_all_devices(db: Session = Depends(get_db)):
+    return crud.get_devices(db)
+
+
+@app.get("/devices/{device_id}", tags=["Devices"])
+async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
+    return crud.get_device_by_id(db, device_id)
+
+
+@app.post("/devices", tags=["Devices"])
+async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+    return crud.create_device(db, device)
+
+
+@app.post("/location-transaction", tags=["Devices"])
+async def new_location_transaction(
+        location_transaction: schemas.LocationTransactionCreate,
+        db: Session = Depends(get_db)
+):
+    return crud.create_location_transaction(db, location_transaction)
+
+
+@app.post("/owner-transaction", tags=["Devices"])
+async def new_owner_transaction(
+        owner_transaction: schemas.OwnerTransactionCreate,
+        db: Session = Depends(get_db)
+):
+    return crud.create_owner_transaction(db, owner_transaction)
+
+
+@app.post("/purchasing-information", tags=["Devices"])
+async def new_purchasing_information(
+        purchasing_information: schemas.PurchasingInformationCreate,
+        db: Session = Depends(get_db)
+):
+    return crud.create_purchasing_information(db, purchasing_information)
+
+
 @app.get("/", response_model=schemas.Device)
 def read_root(db: Session = Depends(get_db)):
     return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
