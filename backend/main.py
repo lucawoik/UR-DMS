@@ -177,20 +177,14 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
     :return:
     """
     data = json.loads(await file.read())
-    for item in data["devices"]:
-        device = schemas.DeviceCreate(**item)
-        crud.create_device(db, device)
-    for item in data["owner_transactions"]:
-        owner_transaction = schemas.OwnerTransactionCreate(**item)
-        crud.create_owner_transaction(db, owner_transaction)
-    for item in data["location_transactions"]:
-        location_transaction = schemas.LocationTransactionCreate(**item)
-        crud.create_location_transaction(db, location_transaction)
-    for item in data["purchasing_information"]:
-        purchasing_information = schemas.PurchasingInformationCreate(**item)
-        crud.create_purchasing_information(db, purchasing_information)
-
-    return {"filename": file.filename}
+    success = crud.import_json(db, data)
+    if success:
+        return {"filename": file.filename}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Unique constraint was violated by the imported data."
+        )
 
 
 @app.get("/export", tags=["Import/Export/Purge Database"])

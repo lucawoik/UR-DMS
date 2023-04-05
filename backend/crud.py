@@ -1,5 +1,7 @@
 import uuid
 
+import sqlalchemy.exc
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, class_mapper
 
 from . import models, schemas
@@ -184,7 +186,37 @@ def delete_all_except_users(db: Session):
     return True
 
 
+def import_json(db: Session, data: dict):
+    """
+    Function to import a compatible dict onto the existing db.
+    :param data:
+    :param db:
+    :return:
+    """
+    try:
+        for item in data["devices"]:
+            device = schemas.DeviceCreate(**item)
+            create_device(db, device)
+        for item in data["owner_transactions"]:
+            owner_transaction = schemas.OwnerTransactionCreate(**item)
+            create_owner_transaction(db, owner_transaction)
+        for item in data["location_transactions"]:
+            location_transaction = schemas.LocationTransactionCreate(**item)
+            create_location_transaction(db, location_transaction)
+        for item in data["purchasing_information"]:
+            purchasing_information = schemas.PurchasingInformationCreate(**item)
+            create_purchasing_information(db, purchasing_information)
+        return True
+    except sqlalchemy.exc.IntegrityError:
+        return False
+
+
 def export_all(db: Session):
+    """
+    Exporting data from Database (except 'users' table) as a dict.
+    :param db:
+    :return:
+    """
     # TODO: Parts of this code are heavily inspired by ChatGPT
     export_dict = {
         "devices": [],
