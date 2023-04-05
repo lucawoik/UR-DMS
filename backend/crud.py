@@ -43,7 +43,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_devices(db: Session, skip: int = 0, limit: int = 100):
+def get_devices(db: Session):
     """
     Get all devices from the database.
     :param db:
@@ -51,7 +51,7 @@ def get_devices(db: Session, skip: int = 0, limit: int = 100):
     :param limit:
     :return:
     """
-    return db.query(models.Device).offset(skip).limit(limit).all()
+    return db.query(models.Device).all()
 
 
 def get_device_by_id(db: Session, device_id: str):
