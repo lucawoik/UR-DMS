@@ -194,10 +194,8 @@ class PurchasingInformationCreate(PurchasingInformationBase):
     Purchasing information create
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         purchasing_information_id: str
     """
-    device_id: str
     purchasing_information_id: str | None = helpers.get_uuid()
     pass
 
@@ -208,8 +206,11 @@ class PurchasingInformation(PurchasingInformationBase):
     which inherits all the necessary attributs from the PurchasingInformationBase-class.
 
     Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True
