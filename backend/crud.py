@@ -1,4 +1,5 @@
 import sqlalchemy.exc
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -78,6 +79,24 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     return db_device
 
 
+def delete_device_by_id(db: Session, device_id: str):
+    """
+    Get a device from the database by id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    device_to_delete = get_device_by_id(db, device_id)
+    if not device_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This device does not exist."
+        )
+    db.delete(device_to_delete)
+    db.commit()
+    return status.HTTP_200_OK
+
+
 def get_owner_transactions(db: Session):
     """
     Get all owner transactions from the database.
@@ -94,7 +113,7 @@ def get_owner_transaction_by_device_id(db: Session, device_id: str):
     :param device_id:
     :return:
     """
-    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id)
+    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).first()
 
 
 def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransactionCreate):
@@ -151,10 +170,10 @@ def get_purchasing_information_by_device_id(db: Session, device_id: str):
     :param device_id:
     :return:
     """
-    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id)
+    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).first()
 
 
-def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate):
+def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate, device_id : str):
     """
     Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
     database.
@@ -163,6 +182,7 @@ def create_purchasing_information(db: Session, purchasing_information: schemas.P
     :return:
     """
     db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict())
+    db_purchasing_information.devices = get_device_by_id(db, device_id)
     db.add(db_purchasing_information)
     db.commit()
     db.refresh(db_purchasing_information)

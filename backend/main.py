@@ -228,6 +228,11 @@ async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)
     return crud.create_device(db, device)
 
 
+@app.delete("/devices/{device_id}", tags=["Devices"])
+async def delete_device(device_id: str, db: Session = Depends(get_db)):
+    return crud.delete_device_by_id(db, device_id)
+
+
 @app.post("/location-transaction", tags=["Devices"])
 async def new_location_transaction(
         location_transaction: schemas.LocationTransactionCreate,
