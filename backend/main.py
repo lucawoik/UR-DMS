@@ -251,10 +251,11 @@ async def new_owner_transaction(
 
 @app.post("/purchasing-information", tags=["Devices"])
 async def new_purchasing_information(
-        purchasing_information: schemas.PurchasingInformationCreate,
+        purchasing_information: schemas.PurchasingInformationCreate, device_id: str,
         db: Session = Depends(get_db)
 ):
-    return crud.create_purchasing_information(db, purchasing_information)
+    create_purchasing_information = crud.create_purchasing_information(db, purchasing_information, device_id)
+    return create_purchasing_information
 
 
 @app.get("/", response_model=schemas.Device)
