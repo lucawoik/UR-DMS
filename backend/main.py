@@ -213,49 +213,154 @@ async def purge_database(db: Session = Depends(get_db)):
     return crud.delete_all_except_users(db)
 
 
+"""
+####################
+Device related routes
+####################
+"""
+
+
+# ##### GET - Routes #####
 @app.get("/devices", tags=["Devices"])
 async def get_all_devices(db: Session = Depends(get_db)):
+    # TODO: add error handling
     return crud.get_devices(db)
 
 
 @app.get("/devices/{device_id}", tags=["Devices"])
 async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
+    # TODO: add error handling
     return crud.get_device_by_id(db, device_id)
 
 
+@app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
+async def get_location_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    # TODO: Implement get_location_transactions_by_device_id
+    return {"Location Transactions": "Location1"}
+
+
+@app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
+async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    # TODO: Implement get_owner_transactions_by_device_id
+    return {"Owner Transactions": "Owner1"}
+
+
+@app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
+async def get_purchasing_information_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    # TODO: Implement get_purchasing_information_by_device_id
+    return {"Purchasing Information": "Info1"}
+
+
+# ##### POST - Routes #####
 @app.post("/devices", tags=["Devices"])
 async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
     return crud.create_device(db, device)
 
 
-@app.delete("/devices/{device_id}", tags=["Devices"])
-async def delete_device(device_id: str, db: Session = Depends(get_db)):
-    return crud.delete_device_by_id(db, device_id)
-
-
-@app.post("/location-transaction", tags=["Devices"])
+@app.post("/devices/{device_id}/location-transactions", tags=["Devices"])
 async def new_location_transaction(
         location_transaction: schemas.LocationTransactionCreate,
         db: Session = Depends(get_db)
 ):
+    # TODO: Update to new api route
     return crud.create_location_transaction(db, location_transaction)
 
 
-@app.post("/owner-transaction", tags=["Devices"])
+@app.post("/devices/{device_id}/owner-transactions", tags=["Devices"])
 async def new_owner_transaction(
         owner_transaction: schemas.OwnerTransactionCreate,
         db: Session = Depends(get_db)
 ):
+    # TODO: Update to new api route
     return crud.create_owner_transaction(db, owner_transaction)
 
 
-@app.post("/purchasing-information", tags=["Devices"])
+@app.post("/devices/{device_id}/purchasing-information", tags=["Devices"])
 async def new_purchasing_information(
         purchasing_information: schemas.PurchasingInformationCreate, device_id: str,
         db: Session = Depends(get_db)
 ):
+    # TODO: Review
     create_purchasing_information = crud.create_purchasing_information(db, purchasing_information, device_id)
     return create_purchasing_information
+
+
+# ##### PUT - Routes #####
+@app.put("/devices/{device_id}", tags=["Devices"])
+async def update_device_by_id(device_id: str, db: Session = Depends(get_db)):
+    # TODO: Implement update_device_by_id
+    return {"Update": "Successful"}
+
+
+@app.put("/devices/{device_id}/location-transactions", tags=["Devices"])
+async def update_location_transaction(
+        location_transaction: schemas.LocationTransactionCreate,
+        db: Session = Depends(get_db)
+):
+    # TODO: implement
+    return {"TBD": "Not yet implemented"}
+
+
+@app.put("/devices/{device_id}/owner-transactions", tags=["Devices"])
+async def update_owner_transaction(
+        owner_transaction: schemas.OwnerTransactionCreate,
+        db: Session = Depends(get_db)
+):
+    # TODO: implement
+    return {"TBD": "Not yet implemented"}
+
+
+@app.put("/devices/{device_id}/purchasing-informations", tags=["Devices"])
+async def update_purchasing_information(
+        purchasing_information: schemas.PurchasingInformationCreate, device_id: str,
+        db: Session = Depends(get_db)
+):
+    # TODO: implement
+    return {"TBD": "Not yet implemented"}
+
+
+# ##### DELETE - Routes #####
+@app.delete("/devices/{device_id}", tags=["Devices"])
+async def delete_device(device_id: str, db: Session = Depends(get_db)):
+    # TODO: Test exception handling
+    return crud.delete_device_by_id(db, device_id)
+
+
+@app.delete("/devices/{device_id}/location-transactions", tags=["Devices"])
+async def delete_location_transaction_by_device_id(
+        device_id: str,
+        location_transaction_id: str,
+        db: Session = Depends(get_db)
+        ):
+    # TODO: Implement
+    return {"TBD": "Not yet implemented"}
+
+
+@app.delete("/devices/{device_id}/owner-transactions", tags=["Devices"])
+async def delete_owner_transaction_by_device_id(
+        device_id: str,
+        owner_transaction_id: str,
+        db: Session = Depends(get_db)
+        ):
+    # TODO: Implement
+    return {"TBD": "Not yet implemented"}
+
+
+@app.delete("/devices/{device_id}/purchasing-informations", tags=["Devices"])
+async def delete_purchasing_information_by_device_id(
+        device_id: str,
+        purchasing_information_id: str,
+        db: Session = Depends(get_db)
+        ):
+    # TODO: Implement
+    return {"TBD": "Not yet implemented"}
+
+
+"""
+####################
+Test related routes
+####################
+"""
 
 
 @app.get("/", response_model=schemas.Device)
