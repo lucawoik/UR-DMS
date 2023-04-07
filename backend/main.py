@@ -256,8 +256,19 @@ async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
 
 @app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
 async def get_location_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
-    # TODO: Implement get_location_transactions_by_device_id
-    return {"Location Transactions": "Location1"}
+    """
+    Returns all location transactions associated with a device.
+    :param device_id:
+    :param db:
+    :return:
+    """
+    location_transactions = crud.get_location_transaction_by_device_id(db, device_id)
+    if not location_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no location transactions associated with this device."
+        )
+    return location_transactions
 
 
 @app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
