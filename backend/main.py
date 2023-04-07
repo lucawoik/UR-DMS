@@ -223,7 +223,17 @@ Device related routes
 # ##### GET - Routes #####
 @app.get("/devices", tags=["Devices"])
 async def get_all_devices(db: Session = Depends(get_db)):
-    # TODO: add error handling
+    """
+    Returns all devices in the database.
+    :param db:
+    :return:
+    """
+    all_devices = crud.get_devices(db)
+    if not all_devices:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No devices in the database."
+        )
     return crud.get_devices(db)
 
 
