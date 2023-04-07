@@ -239,8 +239,19 @@ async def get_all_devices(db: Session = Depends(get_db)):
 
 @app.get("/devices/{device_id}", tags=["Devices"])
 async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
-    # TODO: add error handling
-    return crud.get_device_by_id(db, device_id)
+    """
+    Returns a specific device, which is selected by the device_id.
+    :param device_id:
+    :param db:
+    :return:
+    """
+    device = crud.get_device_by_id(db, device_id)
+    if not device:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="A device with this ID does not exist."
+        )
+    return device
 
 
 @app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
