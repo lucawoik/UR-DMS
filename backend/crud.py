@@ -72,6 +72,7 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     return db_location_transaction
 
 
+# TODO: There should be a way smarter way of not copying these methods
 def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationImport):
     """
     Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
