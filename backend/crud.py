@@ -173,10 +173,30 @@ def get_purchasing_information_by_device_id(db: Session, device_id: str):
     return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).first()
 
 
-def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate, device_id : str):
+def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationImport):
     """
     Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
     database.
+    :param db:
+    :param purchasing_information:
+    :return:
+    """
+    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict())
+    db_purchasing_information.devices = get_device_by_id(db, purchasing_information.device_id)
+    db.add(db_purchasing_information)
+    db.commit()
+    db.refresh(db_purchasing_information)
+    return db_purchasing_information
+
+
+def create_purchasing_information_by_device_id(db: Session,
+                                               purchasing_information: schemas.PurchasingInformationCreate,
+                                               device_id: str
+                                               ):
+    """
+    Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
+    database.
+    :param device_id:
     :param db:
     :param purchasing_information:
     :return:
@@ -221,7 +241,7 @@ def import_json(db: Session, data: dict):
             location_transaction = schemas.LocationTransactionCreate(**item)
             create_location_transaction(db, location_transaction)
         for item in data["purchasing_information"]:
-            purchasing_information = schemas.PurchasingInformationCreate(**item)
+            purchasing_information = schemas.PurchasingInformationImport(**item)
             create_purchasing_information(db, purchasing_information)
         return True
     except sqlalchemy.exc.IntegrityError:
