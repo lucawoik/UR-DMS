@@ -213,7 +213,6 @@ class PurchasingInformationImport(PurchasingInformationBase):
     pass
 
 
-
 class PurchasingInformation(PurchasingInformationBase):
     """
     Purchasing infromation pydantic schema,
