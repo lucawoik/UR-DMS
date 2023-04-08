@@ -175,6 +175,7 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
         - Existing entries in the database are not deleted
         - Merge conflicts are ignored
     :return:
+    TODO: Add exception handling (e.g. false json format...
     """
     data = json.loads(await file.read())
     success = crud.import_json(db, data)
@@ -313,7 +314,7 @@ async def new_purchasing_information(
         db: Session = Depends(get_db)
 ):
     # TODO: Review
-    create_purchasing_information = crud.create_purchasing_information(db, purchasing_information, device_id)
+    create_purchasing_information = crud.create_purchasing_information_by_device_id(db, purchasing_information, device_id)
     return create_purchasing_information
 
 
