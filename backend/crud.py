@@ -5,25 +5,11 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    """
-    Method, which gets all the users from the database
-    :param db:
-    :param skip:
-    :param limit:
-    :return:
-    """
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
-def get_user_by_username(db: Session, rz_username: str):
-    """
-    Get a user from the DB according to the username
-    :param db:
-    :param rz_username:
-    :return:
-    """
-    return db.query(models.User).filter(models.User.rz_username == rz_username).first()
+"""
+####################
+CREATE
+####################
+"""
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -44,27 +30,6 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_devices(db: Session):
-    """
-    Get all devices from the database.
-    :param db:
-    :param skip:
-    :param limit:
-    :return:
-    """
-    return db.query(models.Device).all()
-
-
-def get_device_by_id(db: Session, device_id: str):
-    """
-    Get a device from the database by id.
-    :param db:
-    :param device_id:
-    :return:
-    """
-    return db.query(models.Device).filter(models.Device.device_id == device_id).first()
-
-
 def create_device(db: Session, device: schemas.DeviceCreate):
     """
     Create a device according to the schema DeviceCreate and add it to the database.
@@ -77,43 +42,6 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     db.commit()
     db.refresh(db_device)
     return db_device
-
-
-def delete_device_by_id(db: Session, device_id: str):
-    """
-    Get a device from the database by id.
-    :param db:
-    :param device_id:
-    :return:
-    """
-    device_to_delete = get_device_by_id(db, device_id)
-    if not device_to_delete:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="This device does not exist."
-        )
-    db.delete(device_to_delete)
-    db.commit()
-    return status.HTTP_200_OK
-
-
-def get_owner_transactions(db: Session):
-    """
-    Get all owner transactions from the database.
-    :param db:
-    :return:
-    """
-    return db.query(models.OwnerTransaction).all()
-
-
-def get_owner_transaction_by_device_id(db: Session, device_id: str):
-    """
-    Get an owner transaction by device id.
-    :param db:
-    :param device_id:
-    :return:
-    """
-    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).first()
 
 
 def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransactionCreate):
@@ -130,25 +58,6 @@ def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransa
     return db_owner_transaction
 
 
-def get_location_transactions(db: Session):
-    """
-    Get all location transactions from the database.
-    :param db:
-    :return:
-    """
-    return db.query(models.LocationTransaction).all()
-
-
-def get_location_transaction_by_device_id(db: Session, device_id: str):
-    """
-    Get a location transaction by device id.
-    :param db:
-    :param device_id:
-    :return:
-    """
-    return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id)
-
-
 def create_location_transaction(db: Session, location_transaction: schemas.LocationTransactionCreate):
     """
     Create a location transaction according to the schema LocationTransactionCreate and add it to the database.
@@ -161,16 +70,6 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     db.commit()
     db.refresh(db_location_transaction)
     return db_location_transaction
-
-
-def get_purchasing_information_by_device_id(db: Session, device_id: str):
-    """
-    Find purchasing information for specific device using the device_id
-    :param db:
-    :param device_id:
-    :return:
-    """
-    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).first()
 
 
 def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationImport):
@@ -209,20 +108,6 @@ def create_purchasing_information_by_device_id(db: Session,
     return db_purchasing_information
 
 
-def delete_all_except_users(db: Session):
-    """
-    Deletes all content from the tables Device, OwnerTransaction, LocationTransaction and Purchasing information.
-    :param db:
-    :return:
-    """
-    db.query(models.Device).delete()
-    db.query(models.OwnerTransaction).delete()
-    db.query(models.LocationTransaction).delete()
-    db.query(models.PurchasingInformation).delete()
-    db.commit()
-    return True
-
-
 def import_json(db: Session, data: dict):
     """
     Function to import a compatible dict onto the existing db.
@@ -246,6 +131,103 @@ def import_json(db: Session, data: dict):
         return True
     except sqlalchemy.exc.IntegrityError:
         return False
+
+
+"""
+####################
+READ
+####################
+"""
+
+
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Method, which gets all the users from the database
+    :param db:
+    :param skip:
+    :param limit:
+    :return:
+    """
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+
+def get_user_by_username(db: Session, rz_username: str):
+    """
+    Get a user from the DB according to the username
+    :param db:
+    :param rz_username:
+    :return:
+    """
+    return db.query(models.User).filter(models.User.rz_username == rz_username).first()
+
+
+def get_devices(db: Session):
+    """
+    Get all devices from the database.
+    :param db:
+    :param skip:
+    :param limit:
+    :return:
+    """
+    return db.query(models.Device).all()
+
+
+def get_device_by_id(db: Session, device_id: str):
+    """
+    Get a device from the database by id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.Device).filter(models.Device.device_id == device_id).first()
+
+
+def get_owner_transactions(db: Session):
+    """
+    Get all owner transactions from the database.
+    :param db:
+    :return:
+    """
+    return db.query(models.OwnerTransaction).all()
+
+
+def get_owner_transaction_by_device_id(db: Session, device_id: str):
+    """
+    Get an owner transaction by device id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).first()
+
+
+def get_location_transactions(db: Session):
+    """
+    Get all location transactions from the database.
+    :param db:
+    :return:
+    """
+    return db.query(models.LocationTransaction).all()
+
+
+def get_location_transaction_by_device_id(db: Session, device_id: str):
+    """
+    Get a location transaction by device id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id)
+
+
+def get_purchasing_information_by_device_id(db: Session, device_id: str):
+    """
+    Find purchasing information for specific device using the device_id
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).first()
 
 
 def export_all(db: Session):
@@ -282,3 +264,49 @@ def export_all(db: Session):
         purchasing_information_dict.pop("_sa_instance_state", None)
         export_dict["purchasing_information"].append(purchasing_information_dict)
     return export_dict
+
+
+"""
+####################
+UPDATE
+####################
+"""
+
+
+"""
+####################
+DELETE
+####################
+"""
+
+
+def delete_device_by_id(db: Session, device_id: str):
+    """
+    Get a device from the database by id.
+    :param db:
+    :param device_id:
+    :return:
+    """
+    device_to_delete = get_device_by_id(db, device_id)
+    if not device_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This device does not exist."
+        )
+    db.delete(device_to_delete)
+    db.commit()
+    return status.HTTP_200_OK
+
+
+def delete_all_except_users(db: Session):
+    """
+    Deletes all content from the tables Device, OwnerTransaction, LocationTransaction and Purchasing information.
+    :param db:
+    :return:
+    """
+    db.query(models.Device).delete()
+    db.query(models.OwnerTransaction).delete()
+    db.query(models.LocationTransaction).delete()
+    db.query(models.PurchasingInformation).delete()
+    db.commit()
+    return True
