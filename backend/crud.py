@@ -72,8 +72,7 @@ def create_location_transaction(db: Session, location_transaction: schemas.Locat
     return db_location_transaction
 
 
-# TODO: There should be a way smarter way of not copying these methods
-def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationImport):
+def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate, device_id: str):
     """
     Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
     database.
@@ -81,27 +80,7 @@ def create_purchasing_information(db: Session, purchasing_information: schemas.P
     :param purchasing_information:
     :return:
     """
-    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict())
-    db_purchasing_information.devices = get_device_by_id(db, purchasing_information.device_id)
-    db.add(db_purchasing_information)
-    db.commit()
-    db.refresh(db_purchasing_information)
-    return db_purchasing_information
-
-
-def create_purchasing_information_by_device_id(db: Session,
-                                               purchasing_information: schemas.PurchasingInformationCreate,
-                                               device_id: str
-                                               ):
-    """
-    Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
-    database.
-    :param device_id:
-    :param db:
-    :param purchasing_information:
-    :return:
-    """
-    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict())
+    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict(), device_id=device_id)
     db_purchasing_information.devices = get_device_by_id(db, device_id)
     db.add(db_purchasing_information)
     db.commit()
@@ -127,11 +106,12 @@ def import_json(db: Session, data: dict):
             location_transaction = schemas.LocationTransactionCreate(**item)
             create_location_transaction(db, location_transaction)
         for item in data["purchasing_information"]:
-            purchasing_information = schemas.PurchasingInformationImport(**item)
-            create_purchasing_information(db, purchasing_information)
-        return True
+            purchasing_information = schemas.PurchasingInformationCreate(**item)
+            device_id = item["device_id"]
+            create_purchasing_information(db, purchasing_information, device_id)
+        return status.HTTP_201_CREATED
     except sqlalchemy.exc.IntegrityError:
-        return False
+        return status.HTTP_409_CONFLICT
 
 
 """

@@ -200,19 +200,6 @@ class PurchasingInformationCreate(PurchasingInformationBase):
     pass
 
 
-class PurchasingInformationImport(PurchasingInformationBase):
-    """
-    Purchasing information import, used for importing.
-    Automatically creates a uuid if none is given.
-    Attributes:
-        purchasing_information_id: str
-        device_id: str
-    """
-    purchasing_information_id: str | None = helpers.get_uuid()
-    device_id: str
-    pass
-
-
 class PurchasingInformation(PurchasingInformationBase):
     """
     Purchasing infromation pydantic schema,

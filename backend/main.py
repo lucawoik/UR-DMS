@@ -178,8 +178,8 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
     TODO: Add exception handling (e.g. false json format...
     """
     data = json.loads(await file.read())
-    success = crud.import_json(db, data)
-    if success:
+    response = crud.import_json(db, data)
+    if response == status.HTTP_201_CREATED:
         return {"filename": file.filename}
     else:
         raise HTTPException(
@@ -310,11 +310,12 @@ async def new_owner_transaction(
 
 @app.post("/devices/{device_id}/purchasing-information", tags=["Devices"])
 async def new_purchasing_information(
-        purchasing_information: schemas.PurchasingInformationCreate, device_id: str,
+        purchasing_information: schemas.PurchasingInformationCreate,
+        device_id: str,
         db: Session = Depends(get_db)
 ):
     # TODO: Review
-    create_purchasing_information = crud.create_purchasing_information_by_device_id(db, purchasing_information, device_id)
+    create_purchasing_information = crud.create_purchasing_information(db, purchasing_information, device_id)
     return create_purchasing_information
 
 
