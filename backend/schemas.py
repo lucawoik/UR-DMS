@@ -117,10 +117,8 @@ class OwnerTransactionCreate(OwnerTransactionBase):
     Owner transaction create
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         owner_transaction_id: str
     """
-    device_id: str
     owner_transaction_id: str | None = helpers.get_uuid()
     pass
 
@@ -129,8 +127,13 @@ class OwnerTransaction(OwnerTransactionBase):
     """
     Owner transaction pydantic schema, which inherits all the necessary attributs from the OwnerTransactionBase-class.
     Sets orm_mode to true.
+
+    Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True
@@ -152,10 +155,8 @@ class LocationTransactionCreate(LocationTransactionBase):
     Location transaction create.
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         location_transaction_id: str
     """
-    device_id: str
     location_transaction_id: str | None = helpers.get_uuid()
     pass
 
@@ -166,8 +167,11 @@ class LocationTransaction(LocationTransactionBase):
     which inherits all the necessary attributs from the LocationTransactionBase-class.
 
     Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True

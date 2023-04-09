@@ -316,32 +316,33 @@ async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)
     return crud.create_device(db, device)
 
 
-@app.post("/devices/{device_id}/location-transactions", tags=["Devices"])
-async def new_location_transaction(
-        location_transaction: schemas.LocationTransactionCreate,
-        db: Session = Depends(get_db)
-):
-    # TODO: Update to new api route
-    return crud.create_location_transaction(db, location_transaction)
-
-
-@app.post("/devices/{device_id}/owner-transactions", tags=["Devices"])
+@app.post("/devices/{device_id}/owner-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_owner_transaction(
         owner_transaction: schemas.OwnerTransactionCreate,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
 ):
-    # TODO: Update to new api route
-    return crud.create_owner_transaction(db, owner_transaction)
+    create_owner_transaction = crud.create_owner_transaction(db, device.device_id, owner_transaction)
+    return create_owner_transaction
 
 
-@app.post("/devices/{device_id}/purchasing-information", tags=["Devices"])
+@app.post("/devices/{device_id}/location-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+async def new_location_transaction(
+        location_transaction: schemas.LocationTransactionCreate,
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
+):
+    create_location_transaction = crud.create_location_transaction(db, device.device_id, location_transaction)
+    return create_location_transaction
+
+
+@app.post("/devices/{device_id}/purchasing-information", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_purchasing_information(
         purchasing_information: schemas.PurchasingInformationCreate,
-        device_id: str,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
 ):
-    # TODO: Review
-    create_purchasing_information = crud.create_purchasing_information(db, purchasing_information, device_id)
+    create_purchasing_information = crud.create_purchasing_information(db, device.device_id, purchasing_information)
     return create_purchasing_information
 
 

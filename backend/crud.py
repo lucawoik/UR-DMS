@@ -44,43 +44,48 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     return db_device
 
 
-def create_owner_transaction(db: Session, owner_transaction: schemas.OwnerTransactionCreate):
+def create_owner_transaction(db: Session, device_id: str, owner_transaction: schemas.OwnerTransactionCreate):
     """
     Create an owner transaction according to the schema OwnerTransactionCreate and add it to the database.
     :param db:
+    :param device_id:
     :param owner_transaction:
     :return:
     """
-    db_owner_transaction = models.OwnerTransaction(**owner_transaction.dict())
+    db_owner_transaction = models.OwnerTransaction(device_id=device_id, **owner_transaction.dict())
+    db_owner_transaction.devices = get_device_by_id(db, device_id)
     db.add(db_owner_transaction)
     db.commit()
     db.refresh(db_owner_transaction)
     return db_owner_transaction
 
 
-def create_location_transaction(db: Session, location_transaction: schemas.LocationTransactionCreate):
+def create_location_transaction(db: Session, device_id: str, location_transaction: schemas.LocationTransactionCreate):
     """
     Create a location transaction according to the schema LocationTransactionCreate and add it to the database.
     :param db:
+    :param device_id:
     :param location_transaction:
     :return:
     """
-    db_location_transaction = models.LocationTransaction(**location_transaction.dict())
+    db_location_transaction = models.LocationTransaction(device_id=device_id, **location_transaction.dict())
+    db_location_transaction.devices = get_device_by_id(db, device_id)
     db.add(db_location_transaction)
     db.commit()
     db.refresh(db_location_transaction)
     return db_location_transaction
 
 
-def create_purchasing_information(db: Session, purchasing_information: schemas.PurchasingInformationCreate, device_id: str):
+def create_purchasing_information(db: Session, device_id: str, purchasing_information: schemas.PurchasingInformationCreate):
     """
     Create a purchasing information entry according to the schema PurchasingInformationCreate and add it to the
     database.
     :param db:
+    :param device_id:
     :param purchasing_information:
     :return:
     """
-    db_purchasing_information = models.PurchasingInformation(**purchasing_information.dict(), device_id=device_id)
+    db_purchasing_information = models.PurchasingInformation(device_id=device_id, **purchasing_information.dict())
     db_purchasing_information.devices = get_device_by_id(db, device_id)
     db.add(db_purchasing_information)
     db.commit()
@@ -101,14 +106,16 @@ def import_json(db: Session, data: dict):
             create_device(db, device)
         for item in data["owner_transactions"]:
             owner_transaction = schemas.OwnerTransactionCreate(**item)
-            create_owner_transaction(db, owner_transaction)
+            device_id = item["device_id"]
+            create_owner_transaction(db, device_id, owner_transaction)
         for item in data["location_transactions"]:
             location_transaction = schemas.LocationTransactionCreate(**item)
-            create_location_transaction(db, location_transaction)
+            device_id = item["device_id"]
+            create_location_transaction(db, device_id, location_transaction)
         for item in data["purchasing_information"]:
             purchasing_information = schemas.PurchasingInformationCreate(**item)
             device_id = item["device_id"]
-            create_purchasing_information(db, purchasing_information, device_id)
+            create_purchasing_information(db, device_id, purchasing_information)
         return status.HTTP_201_CREATED
     except sqlalchemy.exc.IntegrityError:
         return status.HTTP_409_CONFLICT
