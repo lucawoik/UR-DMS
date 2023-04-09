@@ -322,6 +322,14 @@ async def new_owner_transaction(
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
+    """
+    Creates a new owner transaction for the device with the given device_id.
+    Uses a device dependency to ensure the device exists.
+    :param owner_transaction:
+    :param db:
+    :param device:
+    :return:
+    """
     create_owner_transaction = crud.create_owner_transaction(db, device.device_id, owner_transaction)
     return create_owner_transaction
 
@@ -332,6 +340,14 @@ async def new_location_transaction(
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
+    """
+        Creates a new location transaction for the device with the given device_id.
+        Uses a device dependency to ensure the device exists.
+        :param location_transaction:
+        :param db:
+        :param device:
+        :return:
+        """
     create_location_transaction = crud.create_location_transaction(db, device.device_id, location_transaction)
     return create_location_transaction
 
@@ -342,6 +358,14 @@ async def new_purchasing_information(
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
+    """
+        Creates a new purchasing information entry for the device with the given device_id.
+        Uses a device dependency to ensure the device exists.
+        :param purchasing_information:
+        :param db:
+        :param device:
+        :return:
+        """
     create_purchasing_information = crud.create_purchasing_information(db, device.device_id, purchasing_information)
     return create_purchasing_information
 
