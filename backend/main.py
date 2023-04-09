@@ -256,15 +256,16 @@ async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
 
 
 @app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
-async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+async def get_owner_transactions_by_device_id(db: Session = Depends(get_db),
+                                              device: models.Device = Depends(get_device_by_id)
+                                              ):
     """
     Returns all owner transactions associated with a device.
-    :param device_id:
     :param db:
+    :param device:
     :return:
     """
-    await get_device_by_id(device_id, db)
-    owner_transactions = crud.get_owner_transaction_by_device_id(db, device_id)
+    owner_transactions = crud.get_owner_transaction_by_device_id(db, device.device_id)
     if not owner_transactions:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -274,15 +275,15 @@ async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depe
 
 
 @app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
-async def get_location_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
+                                                 device: models.Device = Depends(get_device_by_id)):
     """
     Returns all location transactions associated with a device.
-    :param device_id:
     :param db:
+    :param device:
     :return:
     """
-    await get_device_by_id(device_id, db)
-    location_transactions = crud.get_location_transaction_by_device_id(db, device_id)
+    location_transactions = crud.get_location_transaction_by_device_id(db, device.device_id)
     if not location_transactions:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -292,15 +293,15 @@ async def get_location_transactions_by_device_id(device_id: str, db: Session = D
 
 
 @app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
-async def get_purchasing_information_by_device_id(device_id: str, db: Session = Depends(get_db)):
+async def get_purchasing_information_by_device_id(db: Session = Depends(get_db),
+                                                  device: models.Device = Depends(get_device_by_id)):
     """
     Returns the purchasing information associated with a device
-    :param device_id:
     :param db:
+    :param device:
     :return:
     """
-    await get_device_by_id(device_id, db)
-    purchasing_information = crud.get_purchasing_information_by_device_id(db, device_id)
+    purchasing_information = crud.get_purchasing_information_by_device_id(db, device.device_id)
     if not purchasing_information:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
