@@ -257,6 +257,12 @@ async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
 
 @app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
 async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    """
+    Returns all owner transactions associated with a device.
+    :param device_id:
+    :param db:
+    :return:
+    """
     await get_device_by_id(device_id, db)
     owner_transactions = crud.get_owner_transaction_by_device_id(db, device_id)
     if not owner_transactions:
@@ -287,6 +293,12 @@ async def get_location_transactions_by_device_id(device_id: str, db: Session = D
 
 @app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
 async def get_purchasing_information_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    """
+    Returns the purchasing information associated with a device
+    :param device_id:
+    :param db:
+    :return:
+    """
     await get_device_by_id(device_id, db)
     purchasing_information = crud.get_purchasing_information_by_device_id(db, device_id)
     if not purchasing_information:
