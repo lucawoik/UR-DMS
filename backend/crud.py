@@ -261,6 +261,21 @@ UPDATE
 """
 
 
+def update_device(db: Session, device: models.Device, updated_device: schemas.DeviceUpdate):
+    """
+    Updating device with given updates.
+    :param db:
+    :param device:
+    :param updated_device:
+    :return:
+    """
+    updating_dict = updated_device.dict(exclude_none=True)  # excluding empty attributes from the dict
+    for key in updating_dict:
+        device.__setattr__(key, updating_dict[key])
+    db.commit()
+    return get_device_by_id(db, device.device_id)
+
+
 """
 ####################
 DELETE

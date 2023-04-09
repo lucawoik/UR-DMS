@@ -372,9 +372,21 @@ async def new_purchasing_information(
 
 # ##### PUT - Routes #####
 @app.put("/devices/{device_id}", tags=["Devices"])
-async def update_device_by_id(device_id: str, db: Session = Depends(get_db)):
-    # TODO: Implement update_device_by_id
-    return {"Update": "Successful"}
+async def update_device_by_id(update_device: schemas.DeviceUpdate, db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id),):
+    """
+    Updating device using the DeviceUpdate schema to validate update data.
+    :param update_device:
+    :param db:
+    :param device:
+    :return:
+    """
+    updated_device = crud.update_device(db, device, update_device)
+    if not updated_device:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The update was not possible."
+        )
+    return updated_device
 
 
 @app.put("/devices/{device_id}/location-transactions", tags=["Devices"])

@@ -90,6 +90,16 @@ class DeviceCreate(DeviceBase):
     pass
 
 
+class DeviceUpdate(DeviceBase):
+    title: str | None = None
+    device_type: str | None = None
+    description: str | None = None
+    accessories: str | None = None
+    rz_username_buyer: str | None = None
+    serial_number: str | None = None
+    image_url: str | None = None
+
+
 class Device(DeviceBase):
     """
     Device pydantic schema, which inherits all necessary attributes from Device Base.
