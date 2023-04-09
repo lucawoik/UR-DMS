@@ -255,6 +255,18 @@ async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
     return device
 
 
+@app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
+async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
+    await get_device_by_id(device_id, db)
+    owner_transactions = crud.get_owner_transaction_by_device_id(db, device_id)
+    if not owner_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no owner transactions associated with this device."
+        )
+    return owner_transactions
+
+
 @app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
 async def get_location_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
     """
@@ -263,6 +275,7 @@ async def get_location_transactions_by_device_id(device_id: str, db: Session = D
     :param db:
     :return:
     """
+    await get_device_by_id(device_id, db)
     location_transactions = crud.get_location_transaction_by_device_id(db, device_id)
     if not location_transactions:
         raise HTTPException(
@@ -272,16 +285,16 @@ async def get_location_transactions_by_device_id(device_id: str, db: Session = D
     return location_transactions
 
 
-@app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
-async def get_owner_transactions_by_device_id(device_id: str, db: Session = Depends(get_db)):
-    # TODO: Implement get_owner_transactions_by_device_id
-    return {"Owner Transactions": "Owner1"}
-
-
 @app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
 async def get_purchasing_information_by_device_id(device_id: str, db: Session = Depends(get_db)):
-    # TODO: Implement get_purchasing_information_by_device_id
-    return {"Purchasing Information": "Info1"}
+    await get_device_by_id(device_id, db)
+    purchasing_information = crud.get_purchasing_information_by_device_id(db, device_id)
+    if not purchasing_information:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There is no purchasing information associated with this device."
+        )
+    return purchasing_information
 
 
 # ##### POST - Routes #####

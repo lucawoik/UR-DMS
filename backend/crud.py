@@ -179,7 +179,7 @@ def get_owner_transaction_by_device_id(db: Session, device_id: str):
     :param device_id:
     :return:
     """
-    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).first()
+    return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).all()
 
 
 def get_location_transactions(db: Session):
@@ -198,7 +198,7 @@ def get_location_transaction_by_device_id(db: Session, device_id: str):
     :param device_id:
     :return:
     """
-    return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id)
+    return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id).all()
 
 
 def get_purchasing_information_by_device_id(db: Session, device_id: str):
@@ -208,7 +208,7 @@ def get_purchasing_information_by_device_id(db: Session, device_id: str):
     :param device_id:
     :return:
     """
-    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).first()
+    return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).all()
 
 
 def export_all(db: Session):
