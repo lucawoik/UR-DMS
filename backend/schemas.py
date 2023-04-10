@@ -133,6 +133,17 @@ class OwnerTransactionCreate(OwnerTransactionBase):
     pass
 
 
+class OwnerTransactionUpdate(OwnerTransactionBase):
+    """
+    Owner transaction class used to update an entry with some of the attributes.
+        Attributes:
+            rz_username: str
+            timestamp_owner_since: str
+        """
+    rz_username: str | None = None
+    timestamp_owner_since: str | None = None
+
+
 class OwnerTransaction(OwnerTransactionBase):
     """
     Owner transaction pydantic schema, which inherits all the necessary attributs from the OwnerTransactionBase-class.
@@ -169,6 +180,17 @@ class LocationTransactionCreate(LocationTransactionBase):
     """
     location_transaction_id: str | None = helpers.get_uuid()
     pass
+
+
+class LocationTransactionUpdate(LocationTransactionBase):
+    """
+    Location transaction class used to update an entry with some of the attributes.
+        Attributes:
+            room_code: str
+            timestamp_located_since: str
+        """
+    room_code: str | None = None
+    timestamp_located_since: str | None = None
 
 
 class LocationTransaction(LocationTransactionBase):
@@ -212,6 +234,14 @@ class PurchasingInformationCreate(PurchasingInformationBase):
     """
     purchasing_information_id: str | None = helpers.get_uuid()
     pass
+
+
+class PurchasingInformationUpdate(PurchasingInformationBase):
+    price: str | None = None
+    timestamp_warranty_end: str | None = None
+    timestamp_purchase: str | None = None
+    cost_centre: str | None = None
+    seller: str | None = None
 
 
 class PurchasingInformation(PurchasingInformationBase):
