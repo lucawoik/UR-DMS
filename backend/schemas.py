@@ -90,6 +90,16 @@ class DeviceCreate(DeviceBase):
     pass
 
 
+class DeviceUpdate(DeviceBase):
+    title: str | None = None
+    device_type: str | None = None
+    description: str | None = None
+    accessories: str | None = None
+    rz_username_buyer: str | None = None
+    serial_number: str | None = None
+    image_url: str | None = None
+
+
 class Device(DeviceBase):
     """
     Device pydantic schema, which inherits all necessary attributes from Device Base.
@@ -117,20 +127,34 @@ class OwnerTransactionCreate(OwnerTransactionBase):
     Owner transaction create
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         owner_transaction_id: str
     """
-    device_id: str
     owner_transaction_id: str | None = helpers.get_uuid()
     pass
+
+
+class OwnerTransactionUpdate(OwnerTransactionBase):
+    """
+    Owner transaction class used to update an entry with some of the attributes.
+        Attributes:
+            rz_username: str
+            timestamp_owner_since: str
+        """
+    rz_username: str | None = None
+    timestamp_owner_since: str | None = None
 
 
 class OwnerTransaction(OwnerTransactionBase):
     """
     Owner transaction pydantic schema, which inherits all the necessary attributs from the OwnerTransactionBase-class.
     Sets orm_mode to true.
+
+    Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True
@@ -152,12 +176,21 @@ class LocationTransactionCreate(LocationTransactionBase):
     Location transaction create.
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         location_transaction_id: str
     """
-    device_id: str
     location_transaction_id: str | None = helpers.get_uuid()
     pass
+
+
+class LocationTransactionUpdate(LocationTransactionBase):
+    """
+    Location transaction class used to update an entry with some of the attributes.
+        Attributes:
+            room_code: str
+            timestamp_located_since: str
+        """
+    room_code: str | None = None
+    timestamp_located_since: str | None = None
 
 
 class LocationTransaction(LocationTransactionBase):
@@ -166,8 +199,11 @@ class LocationTransaction(LocationTransactionBase):
     which inherits all the necessary attributs from the LocationTransactionBase-class.
 
     Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True
@@ -194,12 +230,18 @@ class PurchasingInformationCreate(PurchasingInformationBase):
     Purchasing information create
     Automatically creates a uuid if none is given.
     Attributes:
-        device_id: str
         purchasing_information_id: str
     """
-    device_id: str
     purchasing_information_id: str | None = helpers.get_uuid()
     pass
+
+
+class PurchasingInformationUpdate(PurchasingInformationBase):
+    price: str | None = None
+    timestamp_warranty_end: str | None = None
+    timestamp_purchase: str | None = None
+    cost_centre: str | None = None
+    seller: str | None = None
 
 
 class PurchasingInformation(PurchasingInformationBase):
@@ -208,8 +250,11 @@ class PurchasingInformation(PurchasingInformationBase):
     which inherits all the necessary attributs from the PurchasingInformationBase-class.
 
     Sets orm_mode to true.
+
+    Attributes:
+        device_id: str
     """
-    pass
+    device_id: str
 
     class Config:
         orm_mode = True

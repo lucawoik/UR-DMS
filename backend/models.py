@@ -49,9 +49,15 @@ class Device(Base):
     serial_number = Column(String)
     image_url = Column(String)
 
-    owner_transactions = relationship("OwnerTransaction", back_populates="devices")
-    location_transactions = relationship("LocationTransaction", back_populates="devices")
-    purchasing_information = relationship("PurchasingInformation", back_populates="devices")
+    owner_transactions = relationship("OwnerTransaction",
+                                      back_populates="devices",
+                                      cascade="all, delete-orphan")
+    location_transactions = relationship("LocationTransaction",
+                                         back_populates="devices",
+                                         cascade="all, delete-orphan")
+    purchasing_information = relationship("PurchasingInformation",
+                                          back_populates="devices",
+                                          cascade="all, delete-orphan")
 
 
 class OwnerTransaction(Base):

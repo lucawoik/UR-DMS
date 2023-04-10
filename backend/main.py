@@ -175,10 +175,11 @@ async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
         - Existing entries in the database are not deleted
         - Merge conflicts are ignored
     :return:
+    TODO: Add exception handling (e.g. false json format...
     """
     data = json.loads(await file.read())
-    success = crud.import_json(db, data)
-    if success:
+    response = crud.import_json(db, data)
+    if response == status.HTTP_201_CREATED:
         return {"filename": file.filename}
     else:
         raise HTTPException(
@@ -211,6 +212,305 @@ async def purge_database(db: Session = Depends(get_db)):
     :return:
     """
     return crud.delete_all_except_users(db)
+
+
+"""
+####################
+Device related routes
+####################
+"""
+
+
+# ##### GET - Routes #####
+@app.get("/devices", tags=["Devices"])
+async def get_all_devices(db: Session = Depends(get_db)):
+    """
+    Returns all devices in the database.
+    :param db:
+    :return:
+    """
+    all_devices = crud.get_devices(db)
+    if not all_devices:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No devices in the database."
+        )
+    return crud.get_devices(db)
+
+
+@app.get("/devices/{device_id}", tags=["Devices"])
+async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
+    """
+    Returns a specific device, which is selected by the device_id.
+    :param device_id:
+    :param db:
+    :return:
+    """
+    device = crud.get_device_by_id(db, device_id)
+    if not device:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="A device with this ID does not exist."
+        )
+    return device
+
+
+@app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
+async def get_owner_transactions_by_device_id(db: Session = Depends(get_db),
+                                              device: models.Device = Depends(get_device_by_id)
+                                              ):
+    """
+    Returns all owner transactions associated with a device.
+    :param db:
+    :param device:
+    :return:
+    """
+    owner_transactions = crud.get_owner_transaction_by_device_id(db, device.device_id)
+    if not owner_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no owner transactions associated with this device."
+        )
+    return owner_transactions
+
+
+@app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
+async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
+                                                 device: models.Device = Depends(get_device_by_id)):
+    """
+    Returns all location transactions associated with a device.
+    :param db:
+    :param device:
+    :return:
+    """
+    location_transactions = crud.get_location_transaction_by_device_id(db, device.device_id)
+    if not location_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no location transactions associated with this device."
+        )
+    return location_transactions
+
+
+@app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
+async def get_purchasing_information_by_device_id(db: Session = Depends(get_db),
+                                                  device: models.Device = Depends(get_device_by_id)):
+    """
+    Returns the purchasing information associated with a device
+    :param db:
+    :param device:
+    :return:
+    """
+    purchasing_information = crud.get_purchasing_information_by_device_id(db, device.device_id)
+    if not purchasing_information:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There is no purchasing information associated with this device."
+        )
+    return purchasing_information
+
+
+# ##### POST - Routes #####
+@app.post("/devices", tags=["Devices"])
+async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+    return crud.create_device(db, device)
+
+
+@app.post("/devices/{device_id}/owner-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+async def new_owner_transaction(
+        owner_transaction: schemas.OwnerTransactionCreate,
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
+):
+    """
+    Creates a new owner transaction for the device with the given device_id.
+    Uses a device dependency to ensure the device exists.
+    :param owner_transaction:
+    :param db:
+    :param device:
+    :return:
+    """
+    create_owner_transaction = crud.create_owner_transaction(db, device.device_id, owner_transaction)
+    return create_owner_transaction
+
+
+@app.post("/devices/{device_id}/location-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+async def new_location_transaction(
+        location_transaction: schemas.LocationTransactionCreate,
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
+):
+    """
+        Creates a new location transaction for the device with the given device_id.
+        Uses a device dependency to ensure the device exists.
+        :param location_transaction:
+        :param db:
+        :param device:
+        :return:
+        """
+    create_location_transaction = crud.create_location_transaction(db, device.device_id, location_transaction)
+    return create_location_transaction
+
+
+@app.post("/devices/{device_id}/purchasing-information", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+async def new_purchasing_information(
+        purchasing_information: schemas.PurchasingInformationCreate,
+        db: Session = Depends(get_db),
+        device: models.Device = Depends(get_device_by_id)
+):
+    """
+        Creates a new purchasing information entry for the device with the given device_id.
+        Uses a device dependency to ensure the device exists.
+        :param purchasing_information:
+        :param db:
+        :param device:
+        :return:
+        """
+    create_purchasing_information = crud.create_purchasing_information(db, device.device_id, purchasing_information)
+    return create_purchasing_information
+
+
+# ##### PUT - Routes #####
+@app.put("/devices/{device_id}", tags=["Devices"])
+async def update_device_by_id(update_device: schemas.DeviceUpdate, db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id),):
+    """
+    Updating device using the DeviceUpdate schema to validate update data.
+    :param update_device:
+    :param db:
+    :param device:
+    :return:
+    """
+    updated_device = crud.update_device(db, device, update_device)
+    if not updated_device:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The update was not possible."
+        )
+    return updated_device
+
+
+@app.put("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
+async def update_owner_transaction(
+        device_id: str,
+        transaction_id: str,
+        update_transaction: schemas.OwnerTransactionUpdate,
+        db: Session = Depends(get_db)
+):
+    """
+    Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+    :param device_id:
+    :param transaction_id:
+    :param update_transaction:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    updated_transaction = crud.update_owner_transaction(db, transaction_id, update_transaction)
+    return updated_transaction
+
+
+@app.put("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+async def update_location_transaction(
+        device_id: str,
+        transaction_id: str,
+        update_transaction: schemas.LocationTransactionUpdate,
+        db: Session = Depends(get_db)
+):
+    """
+        Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+        :param device_id:
+        :param transaction_id:
+        :param update_transaction:
+        :param db:
+        :return:
+        """
+    await get_device_by_id(device_id, db)
+    updated_transaction = crud.update_location_transaction(db, transaction_id, update_transaction)
+    return updated_transaction
+
+
+@app.put("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
+async def update_purchasing_information(
+        device_id: str,
+        information_id: str,
+        update_information: schemas.PurchasingInformationUpdate,
+        db: Session = Depends(get_db)
+):
+    """
+    Updating a certain purchasing information entry using PurchasingInformationUpdate schema.
+    :param device_id:
+    :param information_id:
+    :param update_information:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    updated_information = crud.update_purchasing_information(db, information_id, update_information)
+    return updated_information
+
+
+# ##### DELETE - Routes #####
+@app.delete("/devices/{device_id}", tags=["Devices"])
+async def delete_device(db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id)):
+    return crud.delete_device_by_id(db, device.device_id)
+
+
+@app.delete("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
+async def delete_owner_transaction_by_device_id(
+        device_id: str,
+        owner_transaction_id: str,
+        db: Session = Depends(get_db)
+        ):
+    """
+    Delete a ceratin owner transaction entry by its ID given in the URL.
+    :param device_id:
+    :param owner_transaction_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_owner_transaction(db, owner_transaction_id)
+
+
+@app.delete("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+async def delete_location_transaction_by_device_id(
+        device_id: str,
+        location_transaction_id: str,
+        db: Session = Depends(get_db)
+        ):
+    """
+    Delete a ceratin location transaction entry by its ID given in the URL.
+    :param device_id:
+    :param location_transaction_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_location_transaction(db, location_transaction_id)
+
+
+@app.delete("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
+async def delete_purchasing_information_by_device_id(
+        device_id: str,
+        purchasing_information_id: str,
+        db: Session = Depends(get_db)
+        ):
+    """
+    Delete a ceratin purchasing information entry by its ID given in the URL.
+    :param device_id:
+    :param purchasing_information_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_purchasing_information(db, purchasing_information_id)
+
+
+"""
+####################
+Test related routes
+####################
+"""
 
 
 @app.get("/", response_model=schemas.Device)
