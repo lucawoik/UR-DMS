@@ -409,6 +409,66 @@ def delete_device_by_id(db: Session, device_id: str):
     return status.HTTP_200_OK
 
 
+def delete_entry(db: Session, to_delete):
+    """
+    Helper function that deletes an entry given.
+    :param db:
+    :param to_delete:
+    :return:
+    """
+    db.delete(to_delete)
+    db.commit()
+    return status.HTTP_200_OK
+
+
+def delete_owner_transaction(db: Session, transaction_id: str):
+    """
+    Delete a owner transaction from the database by its ID.#
+    :param db:
+    :param transaction_id:
+    :return:
+    """
+    to_delete = get_owner_transaction_by_id(db, transaction_id)
+    if not to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This owner transaction does not exist."
+        )
+    return delete_entry(db, to_delete)
+
+
+def delete_location_transaction(db: Session, transaction_id: str):
+    """
+    Delete a location transaction from the database by its ID.#
+    :param db:
+    :param transaction_id:
+    :return:
+    """
+    to_delete = get_location_transaction_by_id(db, transaction_id)
+    if not to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This location transaction does not exist."
+        )
+    return delete_entry(db, to_delete)
+
+
+def delete_purchasing_information(db: Session, information_id: str):
+    """
+    Delete a purchasing_information from the database by its ID.#
+    :param db:
+    :param information_id:
+    :return:
+    """
+    to_delete = get_purchasing_information_by_id(db, information_id)
+    if not to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This purchasing_information does not exist."
+        )
+    return delete_entry(db, to_delete)
+
+
 def delete_all_except_users(db: Session):
     """
     Deletes all content from the tables Device, OwnerTransaction, LocationTransaction and Purchasing information.

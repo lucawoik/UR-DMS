@@ -451,39 +451,59 @@ async def update_purchasing_information(
 
 # ##### DELETE - Routes #####
 @app.delete("/devices/{device_id}", tags=["Devices"])
-async def delete_device(device_id: str, db: Session = Depends(get_db)):
-    # TODO: Test exception handling
-    return crud.delete_device_by_id(db, device_id)
+async def delete_device(db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id)):
+    return crud.delete_device_by_id(db, device.device_id)
 
 
-@app.delete("/devices/{device_id}/location-transactions", tags=["Devices"])
-async def delete_location_transaction_by_device_id(
-        device_id: str,
-        location_transaction_id: str,
-        db: Session = Depends(get_db)
-        ):
-    # TODO: Implement
-    return {"TBD": "Not yet implemented"}
-
-
-@app.delete("/devices/{device_id}/owner-transactions", tags=["Devices"])
+@app.delete("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
 async def delete_owner_transaction_by_device_id(
         device_id: str,
         owner_transaction_id: str,
         db: Session = Depends(get_db)
         ):
-    # TODO: Implement
-    return {"TBD": "Not yet implemented"}
+    """
+    Delete a ceratin owner transaction entry by its ID given in the URL.
+    :param device_id:
+    :param owner_transaction_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_owner_transaction(db, owner_transaction_id)
 
 
-@app.delete("/devices/{device_id}/purchasing-informations", tags=["Devices"])
+@app.delete("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+async def delete_location_transaction_by_device_id(
+        device_id: str,
+        location_transaction_id: str,
+        db: Session = Depends(get_db)
+        ):
+    """
+    Delete a ceratin location transaction entry by its ID given in the URL.
+    :param device_id:
+    :param location_transaction_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_location_transaction(db, location_transaction_id)
+
+
+@app.delete("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
 async def delete_purchasing_information_by_device_id(
         device_id: str,
         purchasing_information_id: str,
         db: Session = Depends(get_db)
         ):
-    # TODO: Implement
-    return {"TBD": "Not yet implemented"}
+    """
+    Delete a ceratin purchasing information entry by its ID given in the URL.
+    :param device_id:
+    :param purchasing_information_id:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    return crud.delete_purchasing_information(db, purchasing_information_id)
 
 
 """
