@@ -189,6 +189,23 @@ def get_owner_transaction_by_device_id(db: Session, device_id: str):
     return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).all()
 
 
+def get_owner_transaction_by_id(db: Session, owner_transaction_id: str):
+    """
+    Returns the owner transaction matching the given ID.
+    :param db:
+    :param owner_transaction_id:
+    :return:
+    """
+    owner_transaction = db.query(models.OwnerTransaction).\
+        filter(models.OwnerTransaction.owner_transaction_id == owner_transaction_id).first()
+    if not owner_transaction:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="An owner transaction with this ID does not exist."
+        )
+    return owner_transaction
+
+
 def get_location_transactions(db: Session):
     """
     Get all location transactions from the database.
@@ -208,6 +225,23 @@ def get_location_transaction_by_device_id(db: Session, device_id: str):
     return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id).all()
 
 
+def get_location_transaction_by_id(db: Session, location_transaction_id: str):
+    """
+    Returns the location transaction matching the given ID.
+    :param db:
+    :param location_transaction_id:
+    :return:
+    """
+    location_transaction = db.query(models.LocationTransaction).\
+        filter(models.LocationTransaction.location_transaction_id == location_transaction_id).first()
+    if not location_transaction:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="A location transaction with this ID does not exist."
+        )
+    return location_transaction
+
+
 def get_purchasing_information_by_device_id(db: Session, device_id: str):
     """
     Find purchasing information for specific device using the device_id
@@ -216,6 +250,23 @@ def get_purchasing_information_by_device_id(db: Session, device_id: str):
     :return:
     """
     return db.query(models.PurchasingInformation).filter(models.PurchasingInformation.device_id == device_id).all()
+
+
+def get_purchasing_information_by_id(db: Session, purchasing_information_id: str):
+    """
+    Returns the purchasing information matching the given ID.
+    :param db:
+    :param purchasing_information_id:
+    :return:
+    """
+    purchasing_information = db.query(models.PurchasingInformation).\
+        filter(models.PurchasingInformation.purchasing_information_id == purchasing_information_id).first()
+    if not purchasing_information:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="A purchasing information with this ID does not exist."
+        )
+    return purchasing_information
 
 
 def export_all(db: Session):
@@ -274,6 +325,63 @@ def update_device(db: Session, device: models.Device, updated_device: schemas.De
         device.__setattr__(key, updating_dict[key])
     db.commit()
     return get_device_by_id(db, device.device_id)
+
+
+def update_owner_transaction(db: Session,
+                             owner_transaction_id: str,
+                             updated_transaction: schemas.OwnerTransactionUpdate
+                             ):
+    """
+    Updating a certain owner transaction with given updates.
+    :param db:
+    :param owner_transaction_id:
+    :param updated_transaction:
+    :return:
+    """
+    to_update = get_owner_transaction_by_id(db, owner_transaction_id)
+    updating_dict = updated_transaction.dict(exclude_none=True)
+    for key in updating_dict:
+        to_update.__setattr__(key, updating_dict[key])
+    db.commit()
+    return get_owner_transaction_by_id(db, owner_transaction_id)
+
+
+def update_location_transaction(db: Session,
+                                location_transaction_id: str,
+                                updated_transaction: schemas.LocationTransactionUpdate
+                                ):
+    """
+    Updating a certain location transaction with given updates.
+    :param db:
+    :param location_transaction_id:
+    :param updated_transaction:
+    :return:
+    """
+    to_update = get_location_transaction_by_id(db, location_transaction_id)
+    updating_dict = updated_transaction.dict(exclude_none=True)
+    for key in updating_dict:
+        to_update.__setattr__(key, updating_dict[key])
+    db.commit()
+    return get_location_transaction_by_id(db, location_transaction_id)
+
+
+def update_purchasing_information(db: Session,
+                                  purchasing_information_id: str,
+                                  updated_information: schemas.PurchasingInformationUpdate
+                                  ):
+    """
+    Updating a certain purchasing information with given updates.
+    :param db:
+    :param purchasing_information_id:
+    :param updated_information:
+    :return:
+    """
+    to_update = get_purchasing_information_by_id(db, purchasing_information_id)
+    updating_dict = updated_information.dict(exclude_none=True)
+    for key in updating_dict:
+        to_update.__setattr__(key, updating_dict[key])
+    db.commit()
+    return get_purchasing_information_by_id(db, purchasing_information_id)
 
 
 """

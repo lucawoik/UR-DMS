@@ -389,31 +389,64 @@ async def update_device_by_id(update_device: schemas.DeviceUpdate, db: Session =
     return updated_device
 
 
-@app.put("/devices/{device_id}/location-transactions", tags=["Devices"])
-async def update_location_transaction(
-        location_transaction: schemas.LocationTransactionCreate,
-        db: Session = Depends(get_db)
-):
-    # TODO: implement
-    return {"TBD": "Not yet implemented"}
-
-
-@app.put("/devices/{device_id}/owner-transactions", tags=["Devices"])
+@app.put("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
 async def update_owner_transaction(
-        owner_transaction: schemas.OwnerTransactionCreate,
+        device_id: str,
+        transaction_id: str,
+        update_transaction: schemas.OwnerTransactionUpdate,
         db: Session = Depends(get_db)
 ):
-    # TODO: implement
-    return {"TBD": "Not yet implemented"}
+    """
+    Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+    :param device_id:
+    :param transaction_id:
+    :param update_transaction:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    updated_transaction = crud.update_owner_transaction(db, transaction_id, update_transaction)
+    return updated_transaction
 
 
-@app.put("/devices/{device_id}/purchasing-informations", tags=["Devices"])
+@app.put("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+async def update_location_transaction(
+        device_id: str,
+        transaction_id: str,
+        update_transaction: schemas.LocationTransactionUpdate,
+        db: Session = Depends(get_db)
+):
+    """
+        Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+        :param device_id:
+        :param transaction_id:
+        :param update_transaction:
+        :param db:
+        :return:
+        """
+    await get_device_by_id(device_id, db)
+    updated_transaction = crud.update_location_transaction(db, transaction_id, update_transaction)
+    return updated_transaction
+
+
+@app.put("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
 async def update_purchasing_information(
-        purchasing_information: schemas.PurchasingInformationCreate, device_id: str,
+        device_id: str,
+        information_id: str,
+        update_information: schemas.PurchasingInformationUpdate,
         db: Session = Depends(get_db)
 ):
-    # TODO: implement
-    return {"TBD": "Not yet implemented"}
+    """
+    Updating a certain purchasing information entry using PurchasingInformationUpdate schema.
+    :param device_id:
+    :param information_id:
+    :param update_information:
+    :param db:
+    :return:
+    """
+    await get_device_by_id(device_id, db)
+    updated_information = crud.update_purchasing_information(db, information_id, update_information)
+    return updated_information
 
 
 # ##### DELETE - Routes #####
