@@ -16,11 +16,10 @@ export const UserProvider = (props) => {
             method: "GET",
             headers: {
                 "content-type": "application/json",
-                Authorization: "Bearer" + token
+                Authorization: "Bearer " + token
             },
         };
         const response = await fetch("/api/users/me", requestOptions);
-        const data = await response.json();
 
         if (!response.ok) {
             setToken(null);
