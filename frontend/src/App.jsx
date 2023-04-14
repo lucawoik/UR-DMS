@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 
 import Login from './components/Login'
 import AbstractPage from './components/AbstractPage'
@@ -8,12 +8,12 @@ import CreateDevice from "./components/CreateDevice";
 import DeviceModal from "./components/DeviceModal";
 import DeviceDetail from "./components/DeviceDetail";
 import History from "./components/History";
-
-const authorized = false;
+import {UserContext} from "./context/UserContext";
 
 const App = () => {
 
     const [message, setMessage] = useState("");
+    const [token] = useContext(UserContext);
 
     const getWelcomeMessage = async () => {
         const requestOptions = {
@@ -39,13 +39,20 @@ const App = () => {
 
     return (
         <AbstractPage>
-            {authorized ? <></> : <Login/>}
-            <Dashboard/>
-            <CreateDevice/>
-            <DeviceTable/>
-            {/*<DeviceModal/>*/}
-            <DeviceDetail />
-            <History />
+            {!token ?
+                <>
+                    <Login/>
+                    <DeviceTable/>
+                </>
+                :
+                <>
+                    <Dashboard/>
+                    <DeviceTable/>
+                    <CreateDevice/>
+                    <DeviceDetail />
+                    <History />
+                </>
+            }
         </AbstractPage>
     );
 }
