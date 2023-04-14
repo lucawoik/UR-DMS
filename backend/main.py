@@ -386,6 +386,7 @@ async def new_purchasing_information(
     """
         Creates a new purchasing information entry for the device with the given device_id.
         Uses a device dependency to ensure the device exists.
+        :param current_user:
         :param purchasing_information:
         :param db:
         :param device:
