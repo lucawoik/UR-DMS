@@ -151,6 +151,12 @@ def prepare_db():
 # Calling prepare_db() method
 prepare_db()
 
+"""
+####################
+Authentication and User related routes
+####################
+"""
+
 
 @app.post("/token", tags=["Authentication"])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
@@ -179,18 +185,49 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
 async def read_users_me(current_user: Annotated[models.User, Depends(get_current_user)]):
     """
     Returns the currently authenticated user using the token given from oauth2
-    :param: current_user:
+    :param current_user:
     :return:
     """
     return current_user
 
 
+@app.get("/users/", tags=["Authentication"])
+def read_users(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
+               skip: int = 0,
+               limit: int = 100,
+               db: Session = Depends(get_db)
+               ):
+    """
+    Returns all users
+    :param current_user:
+    :param skip:
+    :param limit:
+    :param db:
+    :return:
+    """
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
+
+
+"""
+####################
+DB operation related routes
+####################
+"""
+
+
 @app.post("/import", tags=["Import/Export/Purge Database"])
-async def import_database_json(file: UploadFile, db: Session = Depends(get_db)):
+async def import_database_json(file: UploadFile,
+                               current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
+                               db: Session = Depends(get_db)
+                               ):
     """
     Takes a .json file and imports it onto the existing database.
         - Existing entries in the database are not deleted
         - Merge conflicts are ignored
+    :param file:
+    :param current_user:
+    :param db:
     :return:
     TODO: Add exception handling (e.g. false json format...
     """
@@ -223,9 +260,13 @@ async def export_database_json(db: Session = Depends(get_db)):
 
 
 @app.delete("/purge", tags=["Import/Export/Purge Database"])
-async def purge_database(db: Session = Depends(get_db)):
+async def purge_database(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
+                         db: Session = Depends(get_db)
+                         ):
     """
     Purges the entire database aside from the 'users' table
+    :param current_user:
+    :param db:
     :return:
     """
     return crud.delete_all_except_users(db)
@@ -398,9 +439,14 @@ async def new_purchasing_information(
 
 # ##### PUT - Routes #####
 @app.put("/devices/{device_id}", tags=["Devices"])
-async def update_device_by_id(update_device: schemas.DeviceUpdate, db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id),):
+async def update_device_by_id(update_device: schemas.DeviceUpdate,
+                              current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
+                              db: Session = Depends(get_db),
+                              device: models.Device = Depends(get_device_by_id)
+                              ):
     """
     Updating device using the DeviceUpdate schema to validate update data.
+    :param current_user:
     :param update_device:
     :param db:
     :param device:
@@ -420,10 +466,12 @@ async def update_owner_transaction(
         device_id: str,
         transaction_id: str,
         update_transaction: schemas.OwnerTransactionUpdate,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
 ):
     """
     Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+    :param current_user:
     :param device_id:
     :param transaction_id:
     :param update_transaction:
@@ -440,10 +488,12 @@ async def update_location_transaction(
         device_id: str,
         transaction_id: str,
         update_transaction: schemas.LocationTransactionUpdate,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
 ):
     """
         Updating a certain owner transaction using the OwnerTransactionUpdate schema.
+        :param current_user:
         :param device_id:
         :param transaction_id:
         :param update_transaction:
@@ -460,10 +510,12 @@ async def update_purchasing_information(
         device_id: str,
         information_id: str,
         update_information: schemas.PurchasingInformationUpdate,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
 ):
     """
     Updating a certain purchasing information entry using PurchasingInformationUpdate schema.
+    :param current_user:
     :param device_id:
     :param information_id:
     :param update_information:
@@ -477,7 +529,17 @@ async def update_purchasing_information(
 
 # ##### DELETE - Routes #####
 @app.delete("/devices/{device_id}", tags=["Devices"])
-async def delete_device(db: Session = Depends(get_db), device: models.Device = Depends(get_device_by_id)):
+async def delete_device(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
+                        db: Session = Depends(get_db),
+                        device: models.Device = Depends(get_device_by_id)
+                        ):
+    """
+    Delete a certain device chosen by its ID.
+    :param current_user:
+    :param db:
+    :param device:
+    :return:
+    """
     return crud.delete_device_by_id(db, device.device_id)
 
 
@@ -485,10 +547,12 @@ async def delete_device(db: Session = Depends(get_db), device: models.Device = D
 async def delete_owner_transaction_by_device_id(
         device_id: str,
         owner_transaction_id: str,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
         ):
     """
     Delete a ceratin owner transaction entry by its ID given in the URL.
+    :param current_user:
     :param device_id:
     :param owner_transaction_id:
     :param db:
@@ -502,10 +566,12 @@ async def delete_owner_transaction_by_device_id(
 async def delete_location_transaction_by_device_id(
         device_id: str,
         location_transaction_id: str,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
         ):
     """
     Delete a ceratin location transaction entry by its ID given in the URL.
+    :param current_user:
     :param device_id:
     :param location_transaction_id:
     :param db:
@@ -519,10 +585,12 @@ async def delete_location_transaction_by_device_id(
 async def delete_purchasing_information_by_device_id(
         device_id: str,
         purchasing_information_id: str,
+        current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
         ):
     """
     Delete a ceratin purchasing information entry by its ID given in the URL.
+    :param current_user:
     :param device_id:
     :param purchasing_information_id:
     :param db:
@@ -557,17 +625,3 @@ def post_root(owner_transaction: schemas.OwnerTransactionCreate, db: Session = D
 @app.get("/test/")
 async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
-
-
-@app.get("/users/", tags=["Authentication"])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
-
-
-@app.get("/users/by-username/{username}/", response_model=schemas.User, tags=["Authentication"])
-def read_users_by_username(rz_username: str, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_username(db, rz_username)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
