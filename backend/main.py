@@ -329,13 +329,17 @@ async def get_purchasing_information_by_device_id(db: Session = Depends(get_db),
 
 # ##### POST - Routes #####
 @app.post("/devices", tags=["Devices"])
-async def new_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+async def new_device(device: schemas.DeviceCreate,
+                     current_user: Annotated[models.User, Depends(get_current_user)],
+                     db: Session = Depends(get_db)
+                     ):
     return crud.create_device(db, device)
 
 
 @app.post("/devices/{device_id}/owner-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_owner_transaction(
         owner_transaction: schemas.OwnerTransactionCreate,
+        current_user: Annotated[models.User, Depends(get_current_user)],
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
@@ -343,6 +347,7 @@ async def new_owner_transaction(
     Creates a new owner transaction for the device with the given device_id.
     Uses a device dependency to ensure the device exists.
     :param owner_transaction:
+    :param current_user:
     :param db:
     :param device:
     :return:
@@ -354,12 +359,14 @@ async def new_owner_transaction(
 @app.post("/devices/{device_id}/location-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_location_transaction(
         location_transaction: schemas.LocationTransactionCreate,
+        current_user: Annotated[models.User, Depends(get_current_user)],
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
     """
         Creates a new location transaction for the device with the given device_id.
         Uses a device dependency to ensure the device exists.
+        :param current_user:
         :param location_transaction:
         :param db:
         :param device:
@@ -372,6 +379,7 @@ async def new_location_transaction(
 @app.post("/devices/{device_id}/purchasing-information", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_purchasing_information(
         purchasing_information: schemas.PurchasingInformationCreate,
+        current_user: Annotated[models.User, Depends(get_current_user)],
         db: Session = Depends(get_db),
         device: models.Device = Depends(get_device_by_id)
 ):
