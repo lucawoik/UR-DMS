@@ -116,10 +116,10 @@ class OwnerTransactionBase(BaseModel):
     Owner transaction base, which handles all necessary data an owner transaction needs to have.
     Attributes:
         rz_username: str
-        timestamp_owner_since: str
+        timestamp_owner_since: int
     """
     rz_username: str
-    timestamp_owner_since: str
+    timestamp_owner_since: int
 
 
 class OwnerTransactionCreate(OwnerTransactionBase):
@@ -138,10 +138,10 @@ class OwnerTransactionUpdate(OwnerTransactionBase):
     Owner transaction class used to update an entry with some of the attributes.
         Attributes:
             rz_username: str
-            timestamp_owner_since: str
+            timestamp_owner_since: int
         """
     rz_username: str | None = None
-    timestamp_owner_since: str | None = None
+    timestamp_owner_since: int | None = None
 
 
 class OwnerTransaction(OwnerTransactionBase):
@@ -165,10 +165,10 @@ class LocationTransactionBase(BaseModel):
     Location transaction base, which handles all necessary data a location transaction needs to have.
     Attributes:
         room_code: str
-        timestamp_located_since: str
+        timestamp_located_since: int
     """
     room_code: str
-    timestamp_located_since: str
+    timestamp_located_since: int
 
 
 class LocationTransactionCreate(LocationTransactionBase):
@@ -187,10 +187,10 @@ class LocationTransactionUpdate(LocationTransactionBase):
     Location transaction class used to update an entry with some of the attributes.
         Attributes:
             room_code: str
-            timestamp_located_since: str
+            timestamp_located_since: int
         """
     room_code: str | None = None
-    timestamp_located_since: str | None = None
+    timestamp_located_since: int | None = None
 
 
 class LocationTransaction(LocationTransactionBase):
@@ -214,13 +214,13 @@ class PurchasingInformationBase(BaseModel):
     Purchasing information base, which handles all necessary data purchasing information needs to have.
     Attributes:
         price: str
-        timestamp_warranty_end: str
-        timestamp_purchase: str
+        timestamp_warranty_end: int
+        timestamp_purchase: int
         seller: str
     """
     price: str
-    timestamp_warranty_end: str
-    timestamp_purchase: str
+    timestamp_warranty_end: int
+    timestamp_purchase: int
     cost_centre: str | None = None
     seller: str
 
@@ -238,8 +238,8 @@ class PurchasingInformationCreate(PurchasingInformationBase):
 
 class PurchasingInformationUpdate(PurchasingInformationBase):
     price: str | None = None
-    timestamp_warranty_end: str | None = None
-    timestamp_purchase: str | None = None
+    timestamp_warranty_end: int | None = None
+    timestamp_purchase: int | None = None
     cost_centre: str | None = None
     seller: str | None = None
 

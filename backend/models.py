@@ -66,14 +66,14 @@ class OwnerTransaction(Base):
     Attributes:
         owner_transaction_id: str (PK)
         rz_username : str
-        timestamp_owner_since : str
+        timestamp_owner_since : int
         device_id : str (FK)
     """
     __tablename__ = "owner_transactions"
 
     owner_transaction_id = Column(String, primary_key=True)
     rz_username = Column(String)
-    timestamp_owner_since = Column(String)
+    timestamp_owner_since = Column(Integer)
 
     device_id = Column(String, ForeignKey("devices.device_id"))
     devices = relationship("Device", back_populates="owner_transactions")
@@ -85,14 +85,14 @@ class LocationTransaction(Base):
     Attributes:
         location_transaction_id : str (PK)
         room_code : str
-        timestamp_located_since : str
+        timestamp_located_since : int
         device_id : str (FK)
     """
     __tablename__ = "location_transactions"
 
     location_transaction_id = Column(String, primary_key=True)
     room_code = Column(String)
-    timestamp_located_since = Column(String)
+    timestamp_located_since = Column(Integer)
 
     device_id = Column(String, ForeignKey("devices.device_id"))
     devices = relationship("Device", back_populates="location_transactions")
@@ -104,8 +104,8 @@ class PurchasingInformation(Base):
     Attributes:
         purchasing_information_id : str (PK)
         price : str
-        timestamp_warranty_end : str
-        timestamp_purchase : str
+        timestamp_warranty_end : int
+        timestamp_purchase : int
         cost_centre :int
         seller : str
         device_id : str (FK)
@@ -114,8 +114,8 @@ class PurchasingInformation(Base):
 
     purchasing_information_id = Column(String, primary_key=True)
     price = Column(String)
-    timestamp_warranty_end = Column(String)
-    timestamp_purchase = Column(String)
+    timestamp_warranty_end = Column(Integer)
+    timestamp_purchase = Column(Integer)
     cost_centre = Column(Integer, nullable=True)
     seller = Column(String)
 
