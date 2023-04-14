@@ -47,8 +47,8 @@ const App = () => {
                 :
                 <>
                     <Dashboard/>
-                    <DeviceTable/>
                     <CreateDevice/>
+                    <DeviceTable/>
                     <DeviceDetail />
                     <History />
                 </>
