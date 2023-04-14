@@ -608,24 +608,9 @@ Test related routes
 """
 
 
-@router.get("/", response_model=schemas.Device)
-def read_root(db: Session = Depends(get_db)):
-    return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
-
-
-@router.post("/")
-def post_root(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
-    return crud.create_device(db, device)
-
-
-@router.post("/owner-transaction")
-def post_root(owner_transaction: schemas.OwnerTransactionCreate, db: Session = Depends(get_db)):
-    return crud.create_owner_transaction(db, owner_transaction)
-
-
-@router.get("/test/")
-async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {"token": token}
+@router.get("/")
+def read_root():
+    return {"message": "Device Managament System"}
 
 
 app.include_router(router)
