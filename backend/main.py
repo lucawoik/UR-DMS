@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from . import variables
+from . import variables, helpers
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
@@ -85,6 +85,40 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    """
+    Get the current user by checking their token.
+    Source: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+    :param token:
+    :param db:
+    :return:
+    """
+    try:
+        payload = jwt.decode(token, variables.SECRET_KEY, algorithms=[variables.ALGORITHM])
+        rz_username: str = payload.get("sub")
+        if rz_username is None:
+            raise helpers.credentials_exception
+        token_data = schemas.TokenData(rz_username=rz_username)
+    except JWTError:
+        raise helpers.credentials_exception
+    user = crud.get_user_by_username(db, rz_username=token_data.rz_username)
+    if user is None:
+        raise helpers.credentials_exception
+    return user
+
+
+async def get_current_user_is_admin(current_user: Annotated[models.User, Depends(get_current_user)]):
+    """
+    Checking if the current user has admin privileges.
+    Source: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+    :param current_user:
+    :return:
+    """
+    if not current_user.has_admin_privileges:
+        raise HTTPException(status_code=400, detail="User has no admin privileges.")
+    return current_user
+
+
 # TODO: Remove print statements
 def prepare_db():
     """
@@ -142,30 +176,13 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
 
 
 @app.get("/users/me", response_model=schemas.User, tags=["Authentication"])
-async def read_users_me(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+async def read_users_me(current_user: Annotated[models.User, Depends(get_current_user)]):
     """
     Returns the currently authenticated user using the token given from oauth2
-    :param token:
-    :param db:
+    :param: current_user:
     :return:
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, variables.SECRET_KEY, algorithms=[variables.ALGORITHM])
-        rz_username: str = payload.get("sub")
-        if rz_username is None:
-            raise credentials_exception
-        token_data = schemas.TokenData(rz_username=rz_username)
-    except JWTError:
-        raise credentials_exception
-    user = crud.get_user_by_username(db, rz_username=token_data.rz_username)
-    if user is None:
-        raise credentials_exception
-    return user
+    return current_user
 
 
 @app.post("/import", tags=["Import/Export/Purge Database"])
