@@ -16,7 +16,7 @@ from .database import SessionLocal, engine
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -159,7 +159,7 @@ Authentication and User related routes
 """
 
 
-@router.post("/token", tags=["Authentication"])
+@router.post("/login", tags=["Authentication"])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
