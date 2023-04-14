@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import FileResponse
 from jose import JWTError, jwt
@@ -21,6 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+router = APIRouter(prefix="/api")
 
 
 # Dependency
@@ -158,7 +159,7 @@ Authentication and User related routes
 """
 
 
-@app.post("/token", tags=["Authentication"])
+@router.post("/token", tags=["Authentication"])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     """
     Login-Route, which receives form data containing username and password as well as the scope of the login (optional)
@@ -181,7 +182,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me", response_model=schemas.User, tags=["Authentication"])
+@router.get("/users/me", response_model=schemas.User, tags=["Authentication"])
 async def read_users_me(current_user: Annotated[models.User, Depends(get_current_user)]):
     """
     Returns the currently authenticated user using the token given from oauth2
@@ -191,7 +192,7 @@ async def read_users_me(current_user: Annotated[models.User, Depends(get_current
     return current_user
 
 
-@app.get("/users/", tags=["Authentication"])
+@router.get("/users/", tags=["Authentication"])
 def read_users(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
                skip: int = 0,
                limit: int = 100,
@@ -216,7 +217,7 @@ DB operation related routes
 """
 
 
-@app.post("/import", tags=["Import/Export/Purge Database"])
+@router.post("/import", tags=["Import/Export/Purge Database"])
 async def import_database_json(file: UploadFile,
                                current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
                                db: Session = Depends(get_db)
@@ -242,7 +243,7 @@ async def import_database_json(file: UploadFile,
         )
 
 
-@app.get("/export", tags=["Import/Export/Purge Database"])
+@router.get("/export", tags=["Import/Export/Purge Database"])
 async def export_database_json(db: Session = Depends(get_db)):
     """
     Exports the entire database as .json file aside from the 'users' table.
@@ -259,7 +260,7 @@ async def export_database_json(db: Session = Depends(get_db)):
     return FileResponse("export.json", media_type="application/json", filename="export.json")
 
 
-@app.delete("/purge", tags=["Import/Export/Purge Database"])
+@router.delete("/purge", tags=["Import/Export/Purge Database"])
 async def purge_database(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
                          db: Session = Depends(get_db)
                          ):
@@ -280,7 +281,7 @@ Device related routes
 
 
 # ##### GET - Routes #####
-@app.get("/devices", tags=["Devices"])
+@router.get("/devices", tags=["Devices"])
 async def get_all_devices(db: Session = Depends(get_db)):
     """
     Returns all devices in the database.
@@ -296,7 +297,7 @@ async def get_all_devices(db: Session = Depends(get_db)):
     return crud.get_devices(db)
 
 
-@app.get("/devices/{device_id}", tags=["Devices"])
+@router.get("/devices/{device_id}", tags=["Devices"])
 async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
     """
     Returns a specific device, which is selected by the device_id.
@@ -313,7 +314,7 @@ async def get_device_by_id(device_id: str, db: Session = Depends(get_db)):
     return device
 
 
-@app.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
+@router.get("/devices/{device_id}/owner-transactions", tags=["Devices"])
 async def get_owner_transactions_by_device_id(db: Session = Depends(get_db),
                                               device: models.Device = Depends(get_device_by_id)
                                               ):
@@ -332,7 +333,7 @@ async def get_owner_transactions_by_device_id(db: Session = Depends(get_db),
     return owner_transactions
 
 
-@app.get("/devices/{device_id}/location-transactions", tags=["Devices"])
+@router.get("/devices/{device_id}/location-transactions", tags=["Devices"])
 async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
                                                  device: models.Device = Depends(get_device_by_id)):
     """
@@ -350,7 +351,7 @@ async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
     return location_transactions
 
 
-@app.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
+@router.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
 async def get_purchasing_information_by_device_id(db: Session = Depends(get_db),
                                                   device: models.Device = Depends(get_device_by_id)):
     """
@@ -369,7 +370,7 @@ async def get_purchasing_information_by_device_id(db: Session = Depends(get_db),
 
 
 # ##### POST - Routes #####
-@app.post("/devices", tags=["Devices"])
+@router.post("/devices", tags=["Devices"])
 async def new_device(device: schemas.DeviceCreate,
                      current_user: Annotated[models.User, Depends(get_current_user)],
                      db: Session = Depends(get_db)
@@ -377,7 +378,7 @@ async def new_device(device: schemas.DeviceCreate,
     return crud.create_device(db, device)
 
 
-@app.post("/devices/{device_id}/owner-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+@router.post("/devices/{device_id}/owner-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_owner_transaction(
         owner_transaction: schemas.OwnerTransactionCreate,
         current_user: Annotated[models.User, Depends(get_current_user)],
@@ -397,7 +398,7 @@ async def new_owner_transaction(
     return create_owner_transaction
 
 
-@app.post("/devices/{device_id}/location-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+@router.post("/devices/{device_id}/location-transactions", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_location_transaction(
         location_transaction: schemas.LocationTransactionCreate,
         current_user: Annotated[models.User, Depends(get_current_user)],
@@ -417,7 +418,7 @@ async def new_location_transaction(
     return create_location_transaction
 
 
-@app.post("/devices/{device_id}/purchasing-information", status_code=status.HTTP_201_CREATED, tags=["Devices"])
+@router.post("/devices/{device_id}/purchasing-information", status_code=status.HTTP_201_CREATED, tags=["Devices"])
 async def new_purchasing_information(
         purchasing_information: schemas.PurchasingInformationCreate,
         current_user: Annotated[models.User, Depends(get_current_user)],
@@ -438,7 +439,7 @@ async def new_purchasing_information(
 
 
 # ##### PUT - Routes #####
-@app.put("/devices/{device_id}", tags=["Devices"])
+@router.put("/devices/{device_id}", tags=["Devices"])
 async def update_device_by_id(update_device: schemas.DeviceUpdate,
                               current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
                               db: Session = Depends(get_db),
@@ -461,7 +462,7 @@ async def update_device_by_id(update_device: schemas.DeviceUpdate,
     return updated_device
 
 
-@app.put("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
+@router.put("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
 async def update_owner_transaction(
         device_id: str,
         transaction_id: str,
@@ -483,7 +484,7 @@ async def update_owner_transaction(
     return updated_transaction
 
 
-@app.put("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+@router.put("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
 async def update_location_transaction(
         device_id: str,
         transaction_id: str,
@@ -505,7 +506,7 @@ async def update_location_transaction(
     return updated_transaction
 
 
-@app.put("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
+@router.put("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
 async def update_purchasing_information(
         device_id: str,
         information_id: str,
@@ -528,7 +529,7 @@ async def update_purchasing_information(
 
 
 # ##### DELETE - Routes #####
-@app.delete("/devices/{device_id}", tags=["Devices"])
+@router.delete("/devices/{device_id}", tags=["Devices"])
 async def delete_device(current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
                         db: Session = Depends(get_db),
                         device: models.Device = Depends(get_device_by_id)
@@ -543,7 +544,7 @@ async def delete_device(current_user: Annotated[models.User, Depends(get_current
     return crud.delete_device_by_id(db, device.device_id)
 
 
-@app.delete("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
+@router.delete("/devices/{device_id}/owner-transactions/{transaction_id}", tags=["Devices"])
 async def delete_owner_transaction_by_device_id(
         device_id: str,
         owner_transaction_id: str,
@@ -562,7 +563,7 @@ async def delete_owner_transaction_by_device_id(
     return crud.delete_owner_transaction(db, owner_transaction_id)
 
 
-@app.delete("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
+@router.delete("/devices/{device_id}/location-transactions/{transaction_id}", tags=["Devices"])
 async def delete_location_transaction_by_device_id(
         device_id: str,
         location_transaction_id: str,
@@ -581,7 +582,7 @@ async def delete_location_transaction_by_device_id(
     return crud.delete_location_transaction(db, location_transaction_id)
 
 
-@app.delete("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
+@router.delete("/devices/{device_id}/purchasing-information/{information_id}", tags=["Devices"])
 async def delete_purchasing_information_by_device_id(
         device_id: str,
         purchasing_information_id: str,
@@ -607,21 +608,24 @@ Test related routes
 """
 
 
-@app.get("/", response_model=schemas.Device)
+@router.get("/", response_model=schemas.Device)
 def read_root(db: Session = Depends(get_db)):
     return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
 
 
-@app.post("/")
+@router.post("/")
 def post_root(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
     return crud.create_device(db, device)
 
 
-@app.post("/owner-transaction")
+@router.post("/owner-transaction")
 def post_root(owner_transaction: schemas.OwnerTransactionCreate, db: Session = Depends(get_db)):
     return crud.create_owner_transaction(db, owner_transaction)
 
 
-@app.get("/test/")
+@router.get("/test/")
 async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
+
+
+app.include_router(router)
