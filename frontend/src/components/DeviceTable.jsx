@@ -13,7 +13,6 @@ const DeviceTable = () => {
     const [devices, setDevices] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false)
-    const [activeModal, setActiveModal] = useState(false);
     const [id, setId] = useState(null);
 
     const getDevices = async () => {
