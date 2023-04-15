@@ -1,9 +1,8 @@
 # Creating the pydantic Models
-import uuid
 
 from pydantic import BaseModel
 
-from backend import helpers
+from . import helpers
 
 
 # TODO: Add source? (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
