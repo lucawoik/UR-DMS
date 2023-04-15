@@ -39,6 +39,23 @@ const DeviceTable = () => {
         getDevices();
     }, [])
 
+    const handleDelete = async (deviceid) => {
+        const requestOptions = {
+            method: "DELETE",
+            headers: {
+                "content-type": "application/json",
+                Authorization: "Bearer " + token
+            },
+        }
+        const response = await fetch(`/api/devices/${deviceid}`, requestOptions)
+        const data = await response.json();
+
+        if (!response.ok) {
+            setErrorMessage(data.detail)
+        }
+        getDevices();
+    }
+
     return (
         <div className="mt-6 mb-6 box">
             <h1 className="title">Liste aller Geräte</h1>
@@ -64,7 +81,7 @@ const DeviceTable = () => {
                                         <button className="button is-primary is-light mr-2 mb-2">
                                             Details
                                         </button>
-                                        <button className="button is-danger is-light">
+                                        <button className="button is-danger is-light" onClick={() => handleDelete(device.device_id)}>
                                             Löschen
                                         </button>
                                     </td>
