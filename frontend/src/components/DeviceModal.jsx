@@ -99,8 +99,8 @@ const DeviceModal = ({active, handleModal, token, id, setErrorMessage}) => {
                                     value={type}
                                     onChange={(e) => setType(e.target.value)}
                                 >
-                                    <option>Laptop</option>
-                                    <option>Monitor</option>
+                                    <option value="laptop">Laptop</option>
+                                    <option value="monitor">Monitor</option>
                                 </select>
                             </div>
                         </div>
