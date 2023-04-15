@@ -1,11 +1,11 @@
 # Creating the pydantic Models
+# Source for some of the classes: https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1
 
 from pydantic import BaseModel
 
 from . import helpers
 
 
-# TODO: Add source? (https://fastapi.tiangolo.com/tutorial/security/get-current-user/#__tabbed_2_1)
 class UserBase(BaseModel):
     """
     The current pydantic user schema according to the FastAPI Docs

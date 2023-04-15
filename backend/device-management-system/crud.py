@@ -274,8 +274,9 @@ def export_all(db: Session):
     Exporting data from Database (except 'users' table) as a dict.
     :param db:
     :return:
+
+    Source: parts of this code are inspired by ChatGPT, nothing has been directly copied.
     """
-    # TODO: Parts of this code are heavily inspired by ChatGPT
     export_dict = {
         "devices": [],
         "owner_transactions": [],

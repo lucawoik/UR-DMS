@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# TODO: Insert source? (Taken from https://fastapi.tiangolo.com/tutorial/sql-databases/#create-the-sqlalchemy-parts)
 
 """
 Creating database with
@@ -10,6 +9,8 @@ Creating database with
   - corresponding engine
   - SessionLocal class: instances of this class will be database sessions
   - Base class: used to create the Models
+  
+Source: https://fastapi.tiangolo.com/tutorial/sql-databases/#create-the-sqlalchemy-parts
 """
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./backend.db"

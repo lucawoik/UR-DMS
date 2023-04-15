@@ -85,7 +85,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     :param data:
     :param expires_delta:
     :return:
-    TODO: Code taken from https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+    Source: Code taken from https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
     """
     to_encode = data.copy()
     if expires_delta:
@@ -131,7 +131,6 @@ async def get_current_user_is_admin(current_user: Annotated[models.User, Depends
     return current_user
 
 
-# TODO: Remove print statements
 def prepare_db():
     """
     Method which prepares the database with the necessary user data.
@@ -146,8 +145,6 @@ def prepare_db():
                                   has_admin_privileges=False,
                                   hashed_password=get_password_hash(variables.USER_PASSWORD))
         crud.create_user(db, user)
-    else:
-        print("User with rz_username: user exists already")
     # Checking for existing user with username "admin" and creating a new one if not existent
     if not crud.get_user_by_username(db, "admin"):
         admin = schemas.UserCreate(rz_username="admin",
@@ -156,8 +153,6 @@ def prepare_db():
                                    has_admin_privileges=True,
                                    hashed_password=get_password_hash(variables.ADMIN_PASSWORD))
         crud.create_user(db, admin)
-    else:
-        print("User with rz_username: admin exists already")
 
 
 # Calling prepare_db() method
@@ -177,7 +172,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     :param db:
     :param form_data:
     :return:
-    TODO: Current implementation taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
+    Source: Current implementation taken from https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
     """
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -259,15 +254,14 @@ async def export_database_json(db: Session = Depends(get_db)):
     """
     Exports the entire database as .json file aside from the 'users' table.
     :return:
+
+    Source: parts of this code is inspired by ChatGPT, nothing was copied directly
     """
-    # TODO: Parts of this code are heavily inspired by ChatGPT
     export = crud.export_all(db)
 
-    # Write the data to a JSON file
     with open("export.json", "w") as f:
         json.dump(export, f, default=str, indent=4, ensure_ascii=False)
 
-    # Return the file as a download
     return FileResponse("export.json", media_type="application/json", filename="export.json")
 
 
