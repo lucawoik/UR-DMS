@@ -49,8 +49,6 @@ const App = () => {
                     <Dashboard/>
                     <CreateDevice/>
                     <DeviceTable/>
-                    <DeviceDetail />
-                    <History />
                 </>
             }
         </AbstractPage>

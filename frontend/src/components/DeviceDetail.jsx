@@ -1,9 +1,34 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 
-const DeviceDetail = () => {
+const DeviceDetail = ({handleDetail, token, setErrorMessage, deviceid}) => {
+    const [device, setDevice] = useState("");
+
+    const getDeviceDetail = async () => {
+        const requestOptions = {
+            method: "GET",
+            headers: {
+                "content-type": "application/json",
+                Authorization: "Bearer " + token
+            },
+        }
+        const response = await fetch(`/api/devices/${deviceid}`, requestOptions)
+        const data = await response.json();
+
+        if (!response.ok) {
+            setErrorMessage(data.detail)
+        }
+        else {
+            setDevice(data)
+        }
+    }
+
+    useEffect(() => {
+        getDeviceDetail();
+    }, [])
+
     return (
         <div className="mt-6 mb-6">
-            <button className="button is-grey is-light mb-3">
+            <button className="button is-grey is-light mb-3" onClick={handleDetail}>
                 Zurück
             </button>
             <div className="box">
@@ -12,8 +37,8 @@ const DeviceDetail = () => {
                         <div className="tile">
                             <div className="tile is-parent is-vertical">
                                 <article className="tile is-child box">
-                                    <h1 className="title">MacBook Pro 13</h1>
-                                    <h2 className="subtitle"><b>Gerätetyp: </b>Laptop</h2>
+                                    <h1 className="title">{device.title}</h1>
+                                    <h2 className="subtitle"><b>Gerätetyp: </b>{device.device_type}</h2>
                                     <figure className="image is-5by4">
                                         <img src="https://bulma.io/images/placeholders/600x480.png"/>
                                     </figure>
@@ -27,11 +52,7 @@ const DeviceDetail = () => {
                                                 Beschreibung:
                                             </label>
                                             <p>
-                                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
-                                                sed diam nonumy eirmod tempor invidunt ut labore et dolore
-                                                magna aliquyam erat, sed diam voluptua. At vero eos et accusam
-                                                et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-                                                takimata sanctus est Lorem ipsum dolor sit amet.
+                                                {device.description}
                                             </p>
                                         </div>
                                         <div className="field">
@@ -39,7 +60,7 @@ const DeviceDetail = () => {
                                                 Zubehör:
                                             </label>
                                             <p>
-                                                Lorem, ipsum, dolor
+                                                {device.accessories}
                                             </p>
                                         </div>
                                         <div className="field">
@@ -47,7 +68,7 @@ const DeviceDetail = () => {
                                                 Seriennummer:
                                             </label>
                                             <p>
-                                                e51c1ff1580d2b730daae20
+                                                {device.serial_number}
                                             </p>
                                         </div>
                                         <div className="field">
@@ -55,7 +76,7 @@ const DeviceDetail = () => {
                                                 Käufer:
                                             </label>
                                             <p>
-                                                wol33712
+                                                {device.rz_username_buyer}
                                             </p>
                                         </div>
                                         <br/>
