@@ -373,7 +373,7 @@ async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
     return location_transactions
 
 
-@router.get("/devices/{device_id}/owner-transactions/latest", tags=["Devices"])
+@router.get("/devices/{device_id}/location-transactions/latest", tags=["Devices"])
 async def get_latest_location_transactions_by_device_id(db: Session = Depends(get_db),
                                                         device: models.Device = Depends(get_device_by_id)
                                                         ):
