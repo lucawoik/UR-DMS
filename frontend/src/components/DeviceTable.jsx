@@ -26,7 +26,7 @@ const DeviceTable = () => {
                 Authorization: "Bearer " + token
             },
         }
-        const response = await fetch("/api/devices", requestOptions)
+        const response = await fetch("http://localhost:8000/api/devices", requestOptions)
         const data = await response.json();
 
         if (!response.ok) {
@@ -50,7 +50,7 @@ const DeviceTable = () => {
                 Authorization: "Bearer " + token
             },
         }
-        const response = await fetch(`/api/devices/${deviceid}`, requestOptions)
+        const response = await fetch(`http://localhost:8000/api/devices/${deviceid}`, requestOptions)
         const data = await response.json();
 
         if (!response.ok) {

@@ -11,7 +11,7 @@ const DeviceDetail = ({handleDetail, token, setErrorMessage, deviceid}) => {
                 Authorization: "Bearer " + token
             },
         }
-        const response = await fetch(`/api/devices/${deviceid}`, requestOptions)
+        const response = await fetch(`http://localhost:8000/api/devices/${deviceid}`, requestOptions)
         const data = await response.json();
 
         if (!response.ok) {

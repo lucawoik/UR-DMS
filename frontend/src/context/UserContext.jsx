@@ -19,7 +19,7 @@ export const UserProvider = (props) => {
                 Authorization: "Bearer " + token
             },
         };
-        const response = await fetch("/api/users/me", requestOptions);
+        const response = await fetch("http://localhost:8000/api/users/me", requestOptions);
 
         if (!response.ok) {
             setToken(null);

@@ -22,7 +22,7 @@ const Login = () => {
             },
             body: JSON.stringify(`grant_type=&username=${username}&password=${password}&scope=&client_id=&client_secret=`)
         };
-        const response = await fetch("/api/login", requestOptions);
+        const response = await fetch("http://localhost:8000/api/login", requestOptions);
         const data = await response.json();
 
         if (!response.ok) {

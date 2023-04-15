@@ -43,7 +43,7 @@ const DeviceModal = ({active, handleModal, token, id, setErrorMessage}) => {
                 image_url: imageurl
             })
         }
-        const response = await fetch("/api/devices", requestOptions)
+        const response = await fetch("http://localhost:8000/api/devices", requestOptions)
         const data = await response.json();
 
         if (!response.ok) {
