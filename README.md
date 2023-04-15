@@ -34,7 +34,12 @@ vorhanden ist.
    1. Images erstellen: ``docker-compose build``
    2. Container erstellen und starten: ``docker-compose up -d``
 
-Das Backend ist nun unter ``http://localhost:8000`` zu erreichen. Das Frontend läuft unter ``http://localhost:3000``.
+Das Backend ist nun unter ``http://localhost:8000/api`` zu erreichen. Das Frontend läuft unter ``http://localhost:3000``.
+
+
+## Dokumentation
+Die eingebaute Swagger-Dokumentation is unter ```http://localhost:8000/docs``` zu erreichen.
+
 
 ***
 
