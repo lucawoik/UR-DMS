@@ -1,5 +1,6 @@
 import sqlalchemy.exc
 from fastapi import HTTPException, status
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -189,6 +190,19 @@ def get_owner_transaction_by_device_id(db: Session, device_id: str):
     return db.query(models.OwnerTransaction).filter(models.OwnerTransaction.device_id == device_id).all()
 
 
+def get_latest_owner_transaction(db: Session, device_id: str):
+    """
+    Returns the latest owner transaction for a certain device
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.OwnerTransaction).\
+        filter(models.OwnerTransaction.device_id == device_id).\
+        order_by(desc(models.OwnerTransaction.timestamp_owner_since)).\
+        first()
+
+
 def get_owner_transaction_by_id(db: Session, owner_transaction_id: str):
     """
     Returns the owner transaction matching the given ID.
@@ -223,6 +237,19 @@ def get_location_transaction_by_device_id(db: Session, device_id: str):
     :return:
     """
     return db.query(models.LocationTransaction).filter(models.LocationTransaction.device_id == device_id).all()
+
+
+def get_latest_location_transaction(db: Session, device_id: str):
+    """
+    Returns the latest location transaction for a certain device
+    :param db:
+    :param device_id:
+    :return:
+    """
+    return db.query(models.LocationTransaction).\
+        filter(models.LocationTransaction.device_id == device_id).\
+        order_by(desc(models.LocationTransaction.timestamp_located_since)).\
+        first()
 
 
 def get_location_transaction_by_id(db: Session, location_transaction_id: str):

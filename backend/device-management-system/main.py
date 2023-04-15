@@ -14,7 +14,6 @@ from . import variables, helpers
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
@@ -23,7 +22,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 router = APIRouter(prefix="/api")
-
 
 # Allow the React frontend to interact with the api-app (Source: https://fastapi.tiangolo.com/tutorial/cors/)
 app.add_middleware(
@@ -338,6 +336,25 @@ async def get_owner_transactions_by_device_id(db: Session = Depends(get_db),
     return owner_transactions
 
 
+@router.get("/devices/{device_id}/owner-transactions/latest", tags=["Devices"])
+async def get_latest_owner_transactions_by_device_id(db: Session = Depends(get_db),
+                                                     device: models.Device = Depends(get_device_by_id)
+                                                     ):
+    """
+    Returns latest owner transactions associated with a device.
+    :param db:
+    :param device:
+    :return:
+    """
+    owner_transactions = crud.get_latest_owner_transaction(db, device.device_id)
+    if not owner_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no owner transactions associated with this device."
+        )
+    return owner_transactions
+
+
 @router.get("/devices/{device_id}/location-transactions", tags=["Devices"])
 async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
                                                  device: models.Device = Depends(get_device_by_id)):
@@ -354,6 +371,25 @@ async def get_location_transactions_by_device_id(db: Session = Depends(get_db),
             detail="There are no location transactions associated with this device."
         )
     return location_transactions
+
+
+@router.get("/devices/{device_id}/owner-transactions/latest", tags=["Devices"])
+async def get_latest_location_transactions_by_device_id(db: Session = Depends(get_db),
+                                                        device: models.Device = Depends(get_device_by_id)
+                                                        ):
+    """
+    Returns latest location transactions associated with a device.
+    :param db:
+    :param device:
+    :return:
+    """
+    owner_transactions = crud.get_latest_location_transaction(db, device.device_id)
+    if not owner_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="There are no location transactions associated with this device."
+        )
+    return owner_transactions
 
 
 @router.get("/devices/{device_id}/purchasing-information", tags=["Devices"])
@@ -555,7 +591,7 @@ async def delete_owner_transaction_by_device_id(
         owner_transaction_id: str,
         current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
-        ):
+):
     """
     Delete a ceratin owner transaction entry by its ID given in the URL.
     :param current_user:
@@ -574,7 +610,7 @@ async def delete_location_transaction_by_device_id(
         location_transaction_id: str,
         current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
-        ):
+):
     """
     Delete a ceratin location transaction entry by its ID given in the URL.
     :param current_user:
@@ -593,7 +629,7 @@ async def delete_purchasing_information_by_device_id(
         purchasing_information_id: str,
         current_user: Annotated[models.User, Depends(get_current_user_is_admin)],
         db: Session = Depends(get_db)
-        ):
+):
     """
     Delete a ceratin purchasing information entry by its ID given in the URL.
     :param current_user:
