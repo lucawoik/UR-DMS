@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# Source: https://fastapi.tiangolo.com/deployment/docker/
 
 FROM python:3.11
 
