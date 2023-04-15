@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from starlette.middleware.cors import CORSMiddleware
 
 from . import variables, helpers
 from . import crud, models, schemas
@@ -22,6 +23,16 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 router = APIRouter(prefix="/api")
+
+
+# Allow the React frontend to interact with the api-app (Source: https://fastapi.tiangolo.com/tutorial/cors/)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="http://localhost:3000",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Dependency
@@ -608,24 +619,9 @@ Test related routes
 """
 
 
-@router.get("/", response_model=schemas.Device)
-def read_root(db: Session = Depends(get_db)):
-    return crud.get_device_by_id(db, "a188957e-0184-4653-b950-7b98b86f8471")
-
-
-@router.post("/")
-def post_root(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
-    return crud.create_device(db, device)
-
-
-@router.post("/owner-transaction")
-def post_root(owner_transaction: schemas.OwnerTransactionCreate, db: Session = Depends(get_db)):
-    return crud.create_owner_transaction(db, owner_transaction)
-
-
-@router.get("/test/")
-async def testing_auth(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {"token": token}
+@router.get("/")
+async def read_root():
+    return {"message": "Device Management System"}
 
 
 app.include_router(router)
